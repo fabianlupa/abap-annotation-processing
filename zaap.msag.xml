@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZAAP</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <APPLCLASS/>
+    <RESPUSER/>
+    <LASTUSER/>
+    <LDATE>0000-00-00</LDATE>
+    <LTIME>00:00:00</LTIME>
+    <STEXT>ZAAP Messages</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>000</MSGNR>
+     <TEXT>&amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>&amp; &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>&amp; &amp; &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>&amp; &amp; &amp; &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Argument value is not allowed.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>The parameter &apos;&amp;1&apos; was supplied with an unallowed value.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>The parameter &apos;&amp;1&apos; has the wrong value: &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Parameter cannot be null.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Parameter &apos;&amp;1&apos; cannot be null.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Value is not contained in specified value range.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Value &apos;&amp;1&apos; is not contained in specified value range.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Value &apos;&amp;1&apos; of parameter &apos;&amp;2&apos; is not contained in value range.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Classname &apos;&amp;1&apos; does not resolve to an object descriptor.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Processor for method &apos;&amp;1&apos; does not exist.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Processor for attribute &apos;&amp;1&apos; does not exist.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Found class or interface is not relevant for annotation processing.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>
