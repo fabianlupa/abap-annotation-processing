@@ -1,0 +1,2 @@
+INTERFACE zif_aap_annotatable PUBLIC.
+ENDINTERFACE.
