@@ -2,7 +2,6 @@
 CLASS zcx_aap_illegal_argument DEFINITION
   PUBLIC
   INHERITING FROM cx_dynamic_check
-  FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
@@ -103,17 +102,6 @@ ENDCLASS.
 
 
 CLASS zcx_aap_illegal_argument IMPLEMENTATION.
-  METHOD raise_if_nullpointer.
-    IF io_ref IS NOT BOUND.
-      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
-        EXPORTING
-          is_textid = COND #( WHEN iv_name IS INITIAL
-                              THEN zcx_aap_illegal_argument=>gc_nullpointer
-                              ELSE zcx_aap_illegal_argument=>gc_nullpointer_with_name )
-          iv_name   = iv_name.
-    ENDIF.
-  ENDMETHOD.
-
   METHOD constructor ##ADT_SUPPRESS_GENERATION.
     super->constructor( previous = ix_previous ).
 
@@ -126,6 +114,18 @@ CLASS zcx_aap_illegal_argument IMPLEMENTATION.
       if_t100_message~t100key = gc_no_arguments.
     ELSE.
       if_t100_message~t100key = is_textid.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD raise_if_nullpointer.
+    IF io_ref IS NOT BOUND.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        EXPORTING
+          is_textid = COND #( WHEN iv_name IS INITIAL
+                              THEN zcx_aap_illegal_argument=>gc_nullpointer
+                              ELSE zcx_aap_illegal_argument=>gc_nullpointer_with_name )
+          iv_name   = iv_name.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

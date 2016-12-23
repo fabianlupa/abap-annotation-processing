@@ -30,37 +30,65 @@ CLASS zcl_aap_proc_object DEFINITION
       "! Create from class or interface name
       "! @parameter iv_name | Class / interface name
       "! @parameter ro_processor | Processor instance
-      "! @raising zcx_aap_illegal_argument | iv_name does not refer to a class or interface that
-      "!                                     implements ZIF_AAP_ANNOTATABLE
+      "! @raising zcx_aap_class_not_annotatable | iv_name does not resolve to a class or an
+      "!                                          interface that implements ZIF_AAP_ANNOTATABLE
+      "! @raising zcx_aap_illegal_argument | iv_name does not resolve to a class or an interface
       from_name IMPORTING iv_name             TYPE abap_classname
                 RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_object
-                RAISING   zcx_aap_illegal_argument,
+                RAISING   zcx_aap_class_not_annotatable
+                          zcx_aap_illegal_argument,
       "! Create from object descriptor
       "! @parameter io_descr | Object descriptor describing a class or interface that implements
       "!                       ZIF_AAP_ANNOTATABLE
       "! @parameter ro_processor | Processor instance
-      "! @raising zcx_aap_illegal_argument | io_descr is null or does not describe a class or
-      "!                                     interface that implements ZIF_AAP_ANNOTATABLE
+      "! @raising zcx_aap_class_not_annotatable | io_descr does not describe a class or
+      "!                                          interface that implements ZIF_AAP_ANNOTATABLE
+      "! @raising zcx_aap_illegal_argument | io_descr is null
       from_descriptor IMPORTING io_descr            TYPE REF TO cl_abap_objectdescr
                       RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_object
-                      RAISING   zcx_aap_illegal_argument,
+                      RAISING   zcx_aap_class_not_annotatable
+                                zcx_aap_illegal_argument,
+      "! Check if object is relevant for annotation processing
+      "! @parameter io_object | Object reference
+      "! @parameter rv_relevant | Object is relevant
+      "! @raising zcx_aap_illegal_argument | io_object cannot be null
       is_object_relevant_by_ref IMPORTING io_object          TYPE REF TO object
                                 RETURNING VALUE(rv_relevant) TYPE abap_bool
                                 RAISING   zcx_aap_illegal_argument,
+      "! Check if object is relevant for annotation processing
+      "! @parameter io_descr | Object descriptor
+      "! @parameter rv_relevant | Object is relevant
+      "! @raising zcx_aap_illegal_argument | io_descr cannot be null
       is_object_relevant_by_descr IMPORTING io_descr           TYPE REF TO cl_abap_objectdescr
                                   RETURNING VALUE(rv_relevant) TYPE abap_bool
                                   RAISING   zcx_aap_illegal_argument,
+      "! Check if object is relevant for annotation processing
+      "! @parameter iv_name | Class / interface name
+      "! @parameter rv_relevant | Object is relevant
+      "! @raising zcx_aap_illegal_argument | iv_name does not resolve to a class or interface
       is_object_relevant_by_name IMPORTING iv_name            TYPE abap_classname
                                  RETURNING VALUE(rv_relevant) TYPE abap_bool
                                  RAISING   zcx_aap_illegal_argument.
     METHODS:
+      "! Get method processor by name
+      "! @parameter iv_method_name | Method name
+      "! @parameter ro_processor | Created processor
+      "! @raising zcx_aap_illegal_argument | Method does not exist
       get_method_processor IMPORTING iv_method_name      TYPE abap_methname
                            RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_method
                            RAISING   zcx_aap_illegal_argument,
+      "! Get attribute processor by name
+      "! @parameter iv_attribute_name | Attribute name
+      "! @parameter ro_processor | Created processor
+      "! @raising zcx_aap_illegal_argument | Attribute does not exist
       get_attribute_processor IMPORTING iv_attribute_name   TYPE abap_attrname
                               RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_attribute
                               RAISING   zcx_aap_illegal_argument,
+      "! Get all method processors
+      "! @parameter rt_processors | Created processors
       get_method_processors RETURNING VALUE(rt_processors) TYPE gty_method_proc_tab,
+      "! Get all attribute processors
+      "! @parameter rt_processors | Created processors
       get_attribute_processors RETURNING VALUE(rt_processors) TYPE gty_attribute_proc_tab,
       load_all REDEFINITION,
       is_annotation_present_by_name REDEFINITION,
@@ -125,12 +153,10 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
                                                     iv_name = 'IO_DESCR' ) ##NO_TEXT.
 
     IF is_object_relevant_by_descr( io_descr ) = abap_false.
-      MESSAGE e015(zaap) INTO DATA(lv_reason).
-      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+      RAISE EXCEPTION TYPE zcx_aap_class_not_annotatable
         EXPORTING
-          is_textid = zcx_aap_illegal_argument=>gc_with_name_and_reason
-          iv_name   = 'IO_DESCR'
-          iv_reason = lv_reason ##NO_TEXT.
+          iv_name      = 'IO_DESCR'
+          iv_classname = CONV #( io_descr->get_relative_name( ) ) ##NO_TEXT.
     ENDIF.
 
     ro_processor = NEW #( io_descr ).
@@ -281,6 +307,7 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
   METHOD load_methods.
 
   ENDMETHOD.
+
   METHOD get_annotations.
 
   ENDMETHOD.
@@ -300,5 +327,4 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
   METHOD is_annotation_present_by_name.
 
   ENDMETHOD.
-
 ENDCLASS.
