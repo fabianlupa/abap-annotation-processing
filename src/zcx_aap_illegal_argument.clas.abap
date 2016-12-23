@@ -104,12 +104,14 @@ ENDCLASS.
 
 CLASS zcx_aap_illegal_argument IMPLEMENTATION.
   METHOD raise_if_nullpointer.
-    RAISE EXCEPTION TYPE zcx_aap_illegal_argument
-      EXPORTING
-        is_textid = COND #( WHEN iv_name IS INITIAL
-                            THEN zcx_aap_illegal_argument=>gc_nullpointer
-                            ELSE zcx_aap_illegal_argument=>gc_nullpointer_with_name )
-        iv_name   = iv_name.
+    IF io_ref IS NOT BOUND.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        EXPORTING
+          is_textid = COND #( WHEN iv_name IS INITIAL
+                              THEN zcx_aap_illegal_argument=>gc_nullpointer
+                              ELSE zcx_aap_illegal_argument=>gc_nullpointer_with_name )
+          iv_name   = iv_name.
+    ENDIF.
   ENDMETHOD.
 
   METHOD constructor ##ADT_SUPPRESS_GENERATION.
