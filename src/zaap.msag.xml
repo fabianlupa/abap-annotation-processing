@@ -109,6 +109,18 @@
      <MSGNR>015</MSGNR>
      <TEXT>Found class or interface is not relevant for annotation processing.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Functionality is not (yet) implemented.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Customizing is inconsistent.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
