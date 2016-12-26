@@ -1,4 +1,4 @@
-"! Exception class for inconsistenz customizing
+"! Exception class for inconsistent customizing
 CLASS zcx_aap_incons_customizing DEFINITION
   PUBLIC
   INHERITING FROM cx_static_check
@@ -9,7 +9,7 @@ CLASS zcx_aap_incons_customizing DEFINITION
     CONSTANTS:
       BEGIN OF gc_no_arguments,
         msgid TYPE symsgid VALUE 'ZAAP',
-        msgno TYPE symsgno VALUE '021',
+        msgno TYPE symsgno VALUE '017',
         attr1 TYPE scx_attrname VALUE '',
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
