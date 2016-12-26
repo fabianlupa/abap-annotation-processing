@@ -18,6 +18,7 @@ ENDCLASS.
 
 CLASS ztcl_aap_test_resolv_switcher IMPLEMENTATION.
   METHOD switch_default_resolver.
+    ASSERT ii_resolver IS BOUND.
     zcl_aap_resolver_injector=>gi_resolver = ii_resolver.
   ENDMETHOD.
 ENDCLASS.
