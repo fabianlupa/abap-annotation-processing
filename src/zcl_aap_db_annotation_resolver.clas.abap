@@ -1,4 +1,4 @@
-"! Default annotation resolver
+"! Default annotation resolver (using database tables)
 CLASS zcl_aap_db_annotation_resolver DEFINITION
   PUBLIC
   FINAL
@@ -33,13 +33,20 @@ CLASS zcl_aap_db_annotation_resolver DEFINITION
         annotationname TYPE abap_classname,
         parameters     TYPE SORTED TABLE OF gty_parameter WITH UNIQUE KEY name,
       END OF gty_mapping_result,
-      gty_mapping_result_tab TYPE STANDARD TABLE OF gty_mapping_result WITH DEFAULT KEY.
+      gty_mapping_result_tab TYPE STANDARD TABLE OF gty_mapping_result WITH DEFAULT KEY,
+      BEGIN OF gty_query_cache,
+        query  TYPE gty_mapping,
+        result TYPE gty_mapping_result_tab,
+      END OF gty_query_cache,
+      gty_query_cache_tab TYPE HASHED TABLE OF gty_query_cache WITH UNIQUE KEY query.
     CLASS-METHODS:
       select_entries IMPORTING is_key            TYPE gty_mapping
                      RETURNING VALUE(rt_entries) TYPE gty_mapping_result_tab,
       build_annotation_tab IMPORTING it_entries            TYPE gty_mapping_result_tab
                            RETURNING VALUE(rt_annotations) TYPE zif_aap_annotation_resolver=>gty_annotation_tab
                            RAISING   zcx_aap_incons_customizing.
+    CLASS-DATA:
+      gt_query_cache TYPE gty_query_cache_tab.
 ENDCLASS.
 
 
@@ -52,6 +59,14 @@ CLASS zcl_aap_db_annotation_resolver IMPLEMENTATION.
            annotationname TYPE seoclsname,
            END OF lty_result.
     DATA: lt_result    TYPE STANDARD TABLE OF lty_result.
+
+    " Check if cache contains the result
+    TRY.
+        rt_entries = gt_query_cache[ query = is_key ]-result.
+        RETURN.
+      CATCH cx_sy_itab_line_not_found ##NO_HANDLER.
+        " Cache did not contain the result
+    ENDTRY.
 
     SELECT * INTO CORRESPONDING FIELDS OF TABLE @lt_result
       FROM zaap_tcassociat
@@ -72,6 +87,9 @@ CLASS zcl_aap_db_annotation_resolver IMPLEMENTATION.
         WHERE detailid = @<ls_entry>-detailid
         ORDER BY PRIMARY KEY.
     ENDLOOP.
+
+    " Cache the result (for this internal session)
+    INSERT VALUE #( query = is_key result = rt_entries ) INTO TABLE gt_query_cache.
   ENDMETHOD.
 
 
