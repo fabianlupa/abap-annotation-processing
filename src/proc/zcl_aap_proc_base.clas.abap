@@ -38,13 +38,23 @@ CLASS zcl_aap_proc_base DEFINITION
     CONSTANTS:
       gc_annotatable_intf_name TYPE abap_intfname VALUE 'ZIF_AAP_ANNOTATABLE'.
     METHODS:
-      constructor.
+      constructor,
+      "! Get the annotation resolver
+      "! @parameter ri_resolver | Resolver instance
+      get_resolver FINAL RETURNING VALUE(ri_resolver) TYPE REF TO zif_aap_annotation_resolver.
   PRIVATE SECTION.
+    DATA:
+      mi_resolver TYPE REF TO zif_aap_annotation_resolver.
 ENDCLASS.
 
 
 
 CLASS zcl_aap_proc_base IMPLEMENTATION.
-  METHOD constructor ##NEEDED.
+  METHOD constructor.
+    mi_resolver = zcl_aap_resolver_injector=>get_resolver( ).
+  ENDMETHOD.
+
+  METHOD get_resolver.
+    ri_resolver = mi_resolver.
   ENDMETHOD.
 ENDCLASS.

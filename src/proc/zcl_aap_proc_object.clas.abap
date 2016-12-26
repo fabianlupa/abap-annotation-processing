@@ -1,3 +1,4 @@
+"! Object processor
 CLASS zcl_aap_proc_object DEFINITION
   PUBLIC
   INHERITING FROM zcl_aap_proc_base
@@ -123,6 +124,7 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ).
   ENDMETHOD.
 
+
   METHOD from_name.
     cl_abap_typedescr=>describe_by_name(
       EXPORTING
@@ -148,6 +150,14 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ro_processor = from_descriptor( CAST #( lo_descr ) ).
   ENDMETHOD.
 
+
+  METHOD from_object.
+    ro_processor = from_descriptor( CAST #(
+                     cl_abap_typedescr=>describe_by_object_ref( ii_annotatable )
+                   ) ).
+  ENDMETHOD.
+
+
   METHOD from_descriptor.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_descr
                                                     iv_name = 'IO_DESCR' ) ##NO_TEXT.
@@ -162,11 +172,129 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ro_processor = NEW #( io_descr ).
   ENDMETHOD.
 
-  METHOD from_object.
-    ro_processor = from_descriptor( CAST #(
-                     cl_abap_typedescr=>describe_by_object_ref( ii_annotatable )
-                   ) ).
+
+  METHOD constructor.
+    super->constructor( ).
+
+    " Private constructor, validation using user friendly exceptions is done in factory methods
+    ASSERT io_descriptor IS BOUND.
+
+    mo_object_descr = io_descriptor.
+    mv_classname_absolute = io_descriptor->absolute_name.
+    mv_classname_relative = io_descriptor->get_relative_name( ).
   ENDMETHOD.
+
+  METHOD get_annotations.
+    " TODO: Think of propagating the exception in some way
+    rt_annotations = get_resolver( )->get_annotations_for_object( mv_classname_relative ).
+  ENDMETHOD.
+
+
+  METHOD get_annotation_by_descr.
+    DATA(lt_annotations) = get_annotations( ).
+
+    zcx_aap_illegal_argument=>raise_if_nullpointer( iv_name = 'IO_DESCR'
+                                                    io_ref  = io_descr ) ##NO_TEXT.
+
+    TRY.
+        ro_annotation = lt_annotations[ descriptor = io_descr ]-instance.
+      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
+        MESSAGE e018(zaap) WITH io_descr->get_relative_name( ) INTO DATA(lv_msg).
+        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+          EXPORTING
+            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
+            ix_previous = lx_ex
+            iv_name     = 'IO_DESCR'
+            iv_reason   = lv_msg ##NO_TEXT.
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD get_annotation_by_name.
+    DATA(lt_annotations) = get_annotations( ).
+
+    TRY.
+        ro_annotation = lt_annotations[ classname = iv_classname ]-instance.
+      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
+        MESSAGE e018(zaap) WITH iv_classname INTO DATA(lv_msg).
+        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+          EXPORTING
+            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
+            ix_previous = lx_ex
+            iv_name     = 'IV_CLASSNAME'
+            iv_reason   = lv_msg
+            iv_value    = iv_classname ##NO_TEXT.
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD get_attribute_processor.
+    DATA(lt_processors) = get_attribute_processors( ).
+
+    TRY.
+        ro_processor = lt_processors[ attribute_name = iv_attribute_name ]-processor.
+      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
+        MESSAGE e014(zaap) WITH iv_attribute_name INTO DATA(lv_reason).
+        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+          EXPORTING
+            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
+            ix_previous = lx_ex
+            iv_name     = 'IV_ATTRIBUTE_NAME'
+            iv_reason   = lv_reason
+            iv_value    = iv_attribute_name ##NO_TEXT.
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD get_attribute_processors.
+    " On demand lazy loading of processors
+    IF lines( mt_attribute_processor_cache ) = 0.
+      load_attributes( ).
+    ENDIF.
+
+    rt_processors = mt_attribute_processor_cache.
+  ENDMETHOD.
+
+
+  METHOD get_method_processor.
+    DATA(lt_processors) = get_method_processors( ).
+
+    TRY.
+        ro_processor = lt_processors[ method_name = iv_method_name ]-processor.
+      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
+        MESSAGE e013(zaap) WITH iv_method_name INTO DATA(lv_reason).
+        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+          EXPORTING
+            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
+            ix_previous = lx_ex
+            iv_name     = 'IV_METHOD_NAME'
+            iv_reason   = lv_reason
+            iv_value    = iv_method_name ##NO_TEXT.
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD get_method_processors.
+    " On demand lazy loading of processors
+    IF lines( mt_method_processor_cache ) = 0.
+      load_methods( ).
+    ENDIF.
+
+    rt_processors = mt_method_processor_cache.
+  ENDMETHOD.
+
+
+  METHOD is_annotation_present_by_descr.
+    DATA(lt_annotations) = get_annotations( ).
+    rv_present = boolc( line_exists( lt_annotations[ descriptor = io_descr ] ) ).
+  ENDMETHOD.
+
+
+  METHOD is_annotation_present_by_name.
+    DATA(lt_annotations) = get_annotations( ).
+    rv_present = boolc( line_exists( lt_annotations[ classname = iv_classname ] ) ).
+  ENDMETHOD.
+
 
   METHOD is_object_relevant_by_descr.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_descr
@@ -184,6 +312,7 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
                                         io_descr->interfaces[ name = gc_annotatable_intf_name ]
                                       ) ) ).
   ENDMETHOD.
+
 
   METHOD is_object_relevant_by_name.
     cl_abap_typedescr=>describe_by_name(
@@ -210,6 +339,7 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     rv_relevant = is_object_relevant_by_descr( CAST #( lo_descr ) ).
   ENDMETHOD.
 
+
   METHOD is_object_relevant_by_ref.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_object
                                                     iv_name  = 'IO_OBJECT' ) ##NO_TEXT.
@@ -219,68 +349,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
                   ) ).
   ENDMETHOD.
 
-  METHOD constructor.
-    super->constructor( ).
-
-    " Private constructor, validation using user friendly exceptions is done in factory methods
-    ASSERT io_descriptor IS BOUND.
-
-    mo_object_descr = io_descriptor.
-    mv_classname_absolute = io_descriptor->absolute_name.
-    mv_classname_relative = io_descriptor->get_relative_name( ).
-  ENDMETHOD.
-
-  METHOD get_attribute_processor.
-    DATA(lt_processors) = get_attribute_processors( ).
-
-    TRY.
-        ro_processor = lt_processors[ attribute_name = iv_attribute_name ]-processor.
-      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e014(zaap) WITH iv_attribute_name INTO DATA(lv_reason).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
-          EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
-            ix_previous = lx_ex
-            iv_name     = 'IV_ATTRIBUTE_NAME'
-            iv_reason   = lv_reason
-            iv_value    = iv_attribute_name ##NO_TEXT.
-    ENDTRY.
-  ENDMETHOD.
-
-  METHOD get_attribute_processors.
-    " On demand lazy loading of processors
-    IF lines( mt_attribute_processor_cache ) = 0.
-      load_attributes( ).
-    ENDIF.
-
-    rt_processors = mt_attribute_processor_cache.
-  ENDMETHOD.
-
-  METHOD get_method_processor.
-    DATA(lt_processors) = get_method_processors( ).
-
-    TRY.
-        ro_processor = lt_processors[ method_name = iv_method_name ]-processor.
-      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e013(zaap) WITH iv_method_name INTO DATA(lv_reason).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
-          EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
-            ix_previous = lx_ex
-            iv_name     = 'IV_METHOD_NAME'
-            iv_reason   = lv_reason
-            iv_value    = iv_method_name ##NO_TEXT.
-    ENDTRY.
-  ENDMETHOD.
-
-  METHOD get_method_processors.
-    " On demand lazy loading of processors
-    IF lines( mt_method_processor_cache ) = 0.
-      load_methods( ).
-    ENDIF.
-
-    rt_processors = mt_method_processor_cache.
-  ENDMETHOD.
 
   METHOD load_all.
     IF lines( mt_attribute_processor_cache ) = 0.
@@ -300,31 +368,13 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD load_attributes.
 
   ENDMETHOD.
 
+
   METHOD load_methods.
-
-  ENDMETHOD.
-
-  METHOD get_annotations.
-
-  ENDMETHOD.
-
-  METHOD get_annotation_by_descr.
-
-  ENDMETHOD.
-
-  METHOD get_annotation_by_name.
-
-  ENDMETHOD.
-
-  METHOD is_annotation_present_by_descr.
-
-  ENDMETHOD.
-
-  METHOD is_annotation_present_by_name.
 
   ENDMETHOD.
 ENDCLASS.
