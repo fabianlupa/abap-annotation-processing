@@ -1,4 +1,8 @@
 "! Object processor
+"! <p>
+"! Entry point to get annotations processor intances. Use <em>from_...</em>-factory-methods to
+"! obtain an instance.
+"! </p>
 CLASS zcl_aap_proc_object DEFINITION
   PUBLIC
   INHERITING FROM zcl_aap_proc_base
@@ -73,33 +77,32 @@ CLASS zcl_aap_proc_object DEFINITION
     METHODS:
       "! Get method processor by name
       "! @parameter iv_method_name | Method name
-      "! @parameter ro_processor | Created processor
+      "! @parameter ro_processor | Found method processor
       "! @raising zcx_aap_illegal_argument | Method does not exist
       get_method_processor IMPORTING iv_method_name      TYPE abap_methname
                            RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_method
                            RAISING   zcx_aap_illegal_argument,
       "! Get attribute processor by name
       "! @parameter iv_attribute_name | Attribute name
-      "! @parameter ro_processor | Created processor
+      "! @parameter ro_processor | Found attribute processor
       "! @raising zcx_aap_illegal_argument | Attribute does not exist
       get_attribute_processor IMPORTING iv_attribute_name   TYPE abap_attrname
                               RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_attribute
                               RAISING   zcx_aap_illegal_argument,
       "! Get all method processors
-      "! @parameter rt_processors | Created processors
+      "! @parameter rt_processors | Method processors
       get_method_processors RETURNING VALUE(rt_processors) TYPE gty_method_proc_tab,
       "! Get all attribute processors
-      "! @parameter rt_processors | Created processors
+      "! @parameter rt_processors | Attribute processors
       get_attribute_processors RETURNING VALUE(rt_processors) TYPE gty_attribute_proc_tab,
       load_all REDEFINITION,
-      is_annotation_present_by_name REDEFINITION,
-      is_annotation_present_by_descr REDEFINITION,
-      get_annotation_by_name REDEFINITION,
-      get_annotation_by_descr REDEFINITION,
       get_annotations REDEFINITION.
     DATA:
+      "! Object descriptor
       mo_object_descr       TYPE REF TO cl_abap_objectdescr READ-ONLY,
+      "! Relative classname
       mv_classname_relative TYPE abap_classname READ-ONLY,
+      "! Absolute classname
       mv_classname_absolute TYPE string READ-ONLY.
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -123,7 +126,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
       ( sign = 'I' option = 'EQ' low = cl_abap_typedescr=>kind_intf )
     ).
   ENDMETHOD.
-
 
   METHOD from_name.
     cl_abap_typedescr=>describe_by_name(
@@ -150,13 +152,11 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ro_processor = from_descriptor( CAST #( lo_descr ) ).
   ENDMETHOD.
 
-
   METHOD from_object.
     ro_processor = from_descriptor( CAST #(
                      cl_abap_typedescr=>describe_by_object_ref( ii_annotatable )
                    ) ).
   ENDMETHOD.
-
 
   METHOD from_descriptor.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_descr
@@ -171,7 +171,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
 
     ro_processor = NEW #( io_descr ).
   ENDMETHOD.
-
 
   METHOD constructor.
     super->constructor( ).
@@ -188,45 +187,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     " TODO: Think of propagating the exception in some way
     rt_annotations = get_resolver( )->get_annotations_for_object( mv_classname_relative ).
   ENDMETHOD.
-
-
-  METHOD get_annotation_by_descr.
-    DATA(lt_annotations) = get_annotations( ).
-
-    zcx_aap_illegal_argument=>raise_if_nullpointer( iv_name = 'IO_DESCR'
-                                                    io_ref  = io_descr ) ##NO_TEXT.
-
-    TRY.
-        ro_annotation = lt_annotations[ descriptor = io_descr ]-instance.
-      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e018(zaap) WITH io_descr->get_relative_name( ) INTO DATA(lv_msg).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
-          EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
-            ix_previous = lx_ex
-            iv_name     = 'IO_DESCR'
-            iv_reason   = lv_msg ##NO_TEXT.
-    ENDTRY.
-  ENDMETHOD.
-
-
-  METHOD get_annotation_by_name.
-    DATA(lt_annotations) = get_annotations( ).
-
-    TRY.
-        ro_annotation = lt_annotations[ classname = iv_classname ]-instance.
-      CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e018(zaap) WITH iv_classname INTO DATA(lv_msg).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
-          EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
-            ix_previous = lx_ex
-            iv_name     = 'IV_CLASSNAME'
-            iv_reason   = lv_msg
-            iv_value    = iv_classname ##NO_TEXT.
-    ENDTRY.
-  ENDMETHOD.
-
 
   METHOD get_attribute_processor.
     DATA(lt_processors) = get_attribute_processors( ).
@@ -245,7 +205,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
-
   METHOD get_attribute_processors.
     " On demand lazy loading of processors
     IF lines( mt_attribute_processor_cache ) = 0.
@@ -254,7 +213,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
 
     rt_processors = mt_attribute_processor_cache.
   ENDMETHOD.
-
 
   METHOD get_method_processor.
     DATA(lt_processors) = get_method_processors( ).
@@ -273,7 +231,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
-
   METHOD get_method_processors.
     " On demand lazy loading of processors
     IF lines( mt_method_processor_cache ) = 0.
@@ -282,19 +239,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
 
     rt_processors = mt_method_processor_cache.
   ENDMETHOD.
-
-
-  METHOD is_annotation_present_by_descr.
-    DATA(lt_annotations) = get_annotations( ).
-    rv_present = boolc( line_exists( lt_annotations[ descriptor = io_descr ] ) ).
-  ENDMETHOD.
-
-
-  METHOD is_annotation_present_by_name.
-    DATA(lt_annotations) = get_annotations( ).
-    rv_present = boolc( line_exists( lt_annotations[ classname = iv_classname ] ) ).
-  ENDMETHOD.
-
 
   METHOD is_object_relevant_by_descr.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_descr
@@ -312,7 +256,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
                                         io_descr->interfaces[ name = gc_annotatable_intf_name ]
                                       ) ) ).
   ENDMETHOD.
-
 
   METHOD is_object_relevant_by_name.
     cl_abap_typedescr=>describe_by_name(
@@ -339,7 +282,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     rv_relevant = is_object_relevant_by_descr( CAST #( lo_descr ) ).
   ENDMETHOD.
 
-
   METHOD is_object_relevant_by_ref.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_object
                                                     iv_name  = 'IO_OBJECT' ) ##NO_TEXT.
@@ -348,7 +290,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
                     cl_abap_typedescr=>describe_by_object_ref( io_object )
                   ) ).
   ENDMETHOD.
-
 
   METHOD load_all.
     IF lines( mt_attribute_processor_cache ) = 0.
@@ -368,13 +309,25 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-
   METHOD load_attributes.
-
+    LOOP AT mo_object_descr->attributes ASSIGNING FIELD-SYMBOL(<ls_attribute>).
+      INSERT VALUE #( attribute_name = <ls_attribute>-name
+                      processor      = NEW zcl_aap_proc_attribute(
+                                           is_attribute_description  = <ls_attribute>
+                                           iv_containing_object_name = mv_classname_relative
+                                       )
+                      ) INTO TABLE mt_attribute_processor_cache.
+    ENDLOOP.
   ENDMETHOD.
 
-
   METHOD load_methods.
-
+    LOOP AT mo_object_descr->methods ASSIGNING FIELD-SYMBOL(<ls_method>).
+      INSERT VALUE #( method_name = <ls_method>-name
+                      processor   = NEW zcl_aap_proc_method(
+                                        is_methdescr = <ls_method>
+                                        iv_containing_object_name = mv_classname_relative
+                                    )
+                      ) INTO TABLE mt_method_processor_cache.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.
