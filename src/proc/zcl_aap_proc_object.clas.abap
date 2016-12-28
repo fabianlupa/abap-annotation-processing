@@ -34,23 +34,29 @@ CLASS zcl_aap_proc_object DEFINITION
                   RAISING   zcx_aap_illegal_argument,
       "! Create from class or interface name
       "! @parameter iv_name | Class / interface name
+      "! @parameter iv_skip_relevency_check | Do not check if the object implements interface
+      "!                                      ZIF_AAP_ANNOTATABLE
       "! @parameter ro_processor | Processor instance
       "! @raising zcx_aap_class_not_annotatable | iv_name does not resolve to a class or an
       "!                                          interface that implements ZIF_AAP_ANNOTATABLE
       "! @raising zcx_aap_illegal_argument | iv_name does not resolve to a class or an interface
-      from_name IMPORTING iv_name             TYPE abap_classname
-                RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_object
+      from_name IMPORTING iv_name                 TYPE abap_classname
+                          iv_skip_relevency_check TYPE abap_bool DEFAULT abap_false
+                RETURNING VALUE(ro_processor)     TYPE REF TO zcl_aap_proc_object
                 RAISING   zcx_aap_class_not_annotatable
                           zcx_aap_illegal_argument,
       "! Create from object descriptor
       "! @parameter io_descr | Object descriptor describing a class or interface that implements
       "!                       ZIF_AAP_ANNOTATABLE
+      "! @parameter iv_skip_relevency_check | Do not check if the object implements interface
+      "!                                      ZIF_AAP_ANNOTATABLE
       "! @parameter ro_processor | Processor instance
       "! @raising zcx_aap_class_not_annotatable | io_descr does not describe a class or
       "!                                          interface that implements ZIF_AAP_ANNOTATABLE
       "! @raising zcx_aap_illegal_argument | io_descr is null
-      from_descriptor IMPORTING io_descr            TYPE REF TO cl_abap_objectdescr
-                      RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_object
+      from_descriptor IMPORTING io_descr                TYPE REF TO cl_abap_objectdescr
+                                iv_skip_relevency_check TYPE abap_bool DEFAULT abap_false
+                      RETURNING VALUE(ro_processor)     TYPE REF TO zcl_aap_proc_object
                       RAISING   zcx_aap_class_not_annotatable
                                 zcx_aap_illegal_argument,
       "! Check if object is relevant for annotation processing
@@ -149,7 +155,8 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
           iv_value  = iv_name.
     ENDIF.
 
-    ro_processor = from_descriptor( CAST #( lo_descr ) ).
+    ro_processor = from_descriptor( io_descr                = CAST #( lo_descr )
+                                    iv_skip_relevency_check = iv_skip_relevency_check ).
   ENDMETHOD.
 
   METHOD from_object.
@@ -162,7 +169,9 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_descr
                                                     iv_name = 'IO_DESCR' ) ##NO_TEXT.
 
-    IF is_object_relevant_by_descr( io_descr ) = abap_false.
+    IF iv_skip_relevency_check = abap_false
+        AND is_object_relevant_by_descr( io_descr ) = abap_false.
+
       RAISE EXCEPTION TYPE zcx_aap_class_not_annotatable
         EXPORTING
           iv_name      = 'IO_DESCR'
