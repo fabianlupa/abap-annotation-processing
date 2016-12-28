@@ -36,7 +36,13 @@ CLASS zcl_aap_proc_base DEFINITION
       "! @parameter rt_annotations | Associated annotations
       get_annotations ABSTRACT RETURNING VALUE(rt_annotations) TYPE zif_aap_annotation_resolver=>gty_annotation_tab,
       "! Force populate internal caches recursively (disables loading on demand)
-      load_all ABSTRACT.
+      load_all ABSTRACT,
+      "! Are annnotations present?
+      "! @parameter rv_has_annotations | Annotations are present
+      has_annotations RETURNING VALUE(rv_has_annotations) TYPE abap_bool,
+      "! How many annotations are present
+      "! @parameter rv_count | Annotation count
+      get_annotation_count RETURNING VALUE(rv_count) TYPE i.
   PROTECTED SECTION.
     CONSTANTS:
       gc_annotatable_intf_name TYPE abap_intfname VALUE 'ZIF_AAP_ANNOTATABLE'.
@@ -109,5 +115,13 @@ CLASS zcl_aap_proc_base IMPLEMENTATION.
   METHOD is_annotation_present_by_name.
     DATA(lt_annotations) = get_annotations( ).
     rv_present = boolc( line_exists( lt_annotations[ classname = iv_classname ] ) ).
+  ENDMETHOD.
+
+  METHOD get_annotation_count.
+    rv_count = lines( get_annotations( ) ).
+  ENDMETHOD.
+
+  METHOD has_annotations.
+    rv_has_annotations = boolc( lines( get_annotations( ) ) > 0 ).
   ENDMETHOD.
 ENDCLASS.
