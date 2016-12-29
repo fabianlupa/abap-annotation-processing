@@ -6,6 +6,8 @@ CLASS zcl_aap_annotation_base DEFINITION
   GLOBAL FRIENDS zif_aap_annotation_resolver.
 
   PUBLIC SECTION.
+    CONSTANTS:
+      gc_classname TYPE abap_classname VALUE 'ZCL_AAP_ANNOTATION_BASE'.
     TYPES:
       gty_target_list TYPE HASHED TABLE OF REF TO zcl_aap_annotation_target
                            WITH UNIQUE KEY table_line.
