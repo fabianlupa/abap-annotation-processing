@@ -45,7 +45,7 @@ CLASS zcl_aap_proc_base DEFINITION
       get_annotation_count RETURNING VALUE(rv_count) TYPE i.
   PROTECTED SECTION.
     CONSTANTS:
-      gc_annotatable_intf_name TYPE abap_intfname VALUE 'ZIF_AAP_ANNOTATABLE'.
+      gc_annotatable_intf_name TYPE abap_intfname VALUE zif_aap_annotatable=>gc_intfname.
     METHODS:
       constructor,
       "! Get the annotation resolver

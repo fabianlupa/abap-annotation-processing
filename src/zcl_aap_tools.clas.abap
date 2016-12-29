@@ -15,13 +15,29 @@ CLASS zcl_aap_tools DEFINITION
       get_classes_implementing_intf IMPORTING iv_intf_name      TYPE abap_classname
                                     RETURNING VALUE(rt_classes) TYPE gty_class_tab
                                     RAISING   zcx_aap_illegal_argument,
+      "! Get all child classes for a given class
+      "! @parameter iv_base_class_name | Name of the base class
+      "! @parameter rt_subclasses | Found child classes
+      "! @raising zcx_aap_illegal_argument | Base class does not exist
+      get_subclasses_of_class IMPORTING iv_base_class_name   TYPE abap_classname
+                              RETURNING VALUE(rt_subclasses) TYPE gty_class_tab
+                              RAISING   zcx_aap_illegal_argument,
       "! Get package name for a class
       "! @parameter iv_class_name | Name of the class
       "! @parameter rv_devclass | Package name
       "! @raising zcx_aap_illegal_argument | iv_class_name invalid
       get_devclass_for_class IMPORTING iv_class_name      TYPE abap_classname
                              RETURNING VALUE(rv_devclass) TYPE devclass
-                             RAISING   zcx_aap_illegal_argument.
+                             RAISING   zcx_aap_illegal_argument,
+      "! Get parent package for a package
+      "! <p>
+      "! If the child package does not exist or there is not parent package the result will be
+      "! empty.
+      "! </p>
+      "! @parameter iv_devclass | Child devclass
+      "! @parameter rv_parent_devclass | Parent devclass
+      get_parent_devclass IMPORTING iv_devclass               TYPE devclass
+                          RETURNING VALUE(rv_parent_devclass) TYPE devclass.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -29,6 +45,8 @@ ENDCLASS.
 
 
 CLASS zcl_aap_tools IMPLEMENTATION.
+
+
   METHOD get_classes_implementing_intf.
     DATA: lt_result TYPE seor_implementing_keys.
     CALL FUNCTION 'SEO_INTERFACE_IMPLEM_GET_ALL'
@@ -48,13 +66,14 @@ CLASS zcl_aap_tools IMPLEMENTATION.
           is_textid = zcx_aap_illegal_argument=>gc_with_name_and_reason
           iv_name   = 'IV_INTF_NAME'
           iv_reason = lv_message
-          iv_value  = iv_intf_name.
+          iv_value  = iv_intf_name ##NO_TEXT.
     ENDIF.
 
     LOOP AT lt_result ASSIGNING FIELD-SYMBOL(<ls_result>).
       INSERT <ls_result>-clsname INTO TABLE rt_classes.
     ENDLOOP.
   ENDMETHOD.
+
 
   METHOD get_devclass_for_class.
     CALL FUNCTION 'DEV_GET_DEVCLASS_FROM_NAME'
@@ -68,7 +87,47 @@ CLASS zcl_aap_tools IMPLEMENTATION.
         EXPORTING
           is_textid = zcx_aap_illegal_argument=>gc_with_name
           iv_name   = 'IV_CLASS_NAME'
-          iv_value  = iv_class_name.
+          iv_value  = iv_class_name ##NO_TEXT.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD get_subclasses_of_class.
+    " Check if class exists
+    cl_abap_typedescr=>describe_by_name(
+      EXPORTING
+        p_name         = iv_base_class_name    " Type name
+      RECEIVING
+        p_descr_ref    = DATA(lo_descr)    " Reference to description object
+      EXCEPTIONS
+        type_not_found = 1
+        OTHERS         = 2
+    ).
+    IF sy-subrc <> 0 OR lo_descr IS NOT BOUND
+        OR lo_descr->type_kind <> cl_abap_typedescr=>typekind_class.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        EXPORTING
+          is_textid = zcx_aap_illegal_argument=>gc_with_name_and_reason
+          iv_name   = 'IV_BASE_CLASS_NAME'
+          iv_reason = iv_base_class_name && ' is not a class'(001)
+          iv_value  = iv_base_class_name ##NO_TEXT.
+    ENDIF.
+
+    SELECT clsname INTO TABLE @rt_subclasses
+      FROM seometarel
+      WHERE refclsname = @iv_base_class_name
+        AND reltype    = '2'
+        AND version    = '1'
+      ORDER BY clsname.
+  ENDMETHOD.
+
+  METHOD get_parent_devclass.
+    CALL FUNCTION 'DEV_GET_PARENTPACK_FROM_OBJECT'
+      EXPORTING
+        i_pgmid      = 'R3TR'    " Programm-ID in Aufträgen und Aufgaben
+        i_objtype    = 'DEVC'    " Objekttyp
+        i_objname    = CONV sobj_name( iv_devclass )    " Objektname im Objektkatalog
+      IMPORTING
+        e_parentpack = rv_parent_devclass.     " Paket
   ENDMETHOD.
 ENDCLASS.
