@@ -45,8 +45,6 @@ ENDCLASS.
 
 
 CLASS zcl_aap_tools IMPLEMENTATION.
-
-
   METHOD get_classes_implementing_intf.
     DATA: lt_result TYPE seor_implementing_keys.
     CALL FUNCTION 'SEO_INTERFACE_IMPLEM_GET_ALL'
@@ -74,13 +72,14 @@ CLASS zcl_aap_tools IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-
   METHOD get_devclass_for_class.
-    CALL FUNCTION 'DEV_GET_DEVCLASS_FROM_NAME'
+    CALL FUNCTION 'DEV_GET_DEVCLASS_FROM_OBJECT'
       EXPORTING
-        i_objname  = iv_class_name    " Objektname im Objektkatalog
+        i_pgmid    = 'R3TR'
+        i_objtype  = 'CLAS'
+        i_objname  = CONV sobj_name( iv_class_name )
       IMPORTING
-        e_devclass = rv_devclass.    " Paket
+        e_devclass = rv_devclass.
 
     IF rv_devclass IS INITIAL.
       RAISE EXCEPTION TYPE zcx_aap_illegal_argument
@@ -90,7 +89,6 @@ CLASS zcl_aap_tools IMPLEMENTATION.
           iv_value  = iv_class_name ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
-
 
   METHOD get_subclasses_of_class.
     " Check if class exists
