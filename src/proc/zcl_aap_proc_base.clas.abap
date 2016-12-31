@@ -42,7 +42,10 @@ CLASS zcl_aap_proc_base DEFINITION
       has_annotations RETURNING VALUE(rv_has_annotations) TYPE abap_bool,
       "! How many annotations are present
       "! @parameter rv_count | Annotation count
-      get_annotation_count RETURNING VALUE(rv_count) TYPE i.
+      get_annotation_count RETURNING VALUE(rv_count) TYPE i,
+      "! Can this class / interface / method / parameter / attribute be annotated
+      "! @parameter rv_annotatable | Annotatable
+      is_annotatable ABSTRACT RETURNING VALUE(rv_annotatable) TYPE abap_bool.
   PROTECTED SECTION.
     CONSTANTS:
       gc_annotatable_intf_name TYPE abap_intfname VALUE zif_aap_annotatable=>gc_intfname.

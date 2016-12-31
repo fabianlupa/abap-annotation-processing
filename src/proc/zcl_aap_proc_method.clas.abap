@@ -26,19 +26,23 @@ CLASS zcl_aap_proc_method DEFINITION
                               RETURNING VALUE(ro_processor) TYPE REF TO zcl_aap_proc_parameter
                               RAISING   zcx_aap_illegal_argument,
       load_all REDEFINITION,
-      get_annotations REDEFINITION.
+      get_annotations REDEFINITION,
+      is_annotatable REDEFINITION.
     DATA:
       "! Name of the containing class or interface
       mv_containing_object_name TYPE abap_classname READ-ONLY,
       "! Name of the method in its containing object
       mv_method_name            TYPE abap_methname READ-ONLY,
       "! Method description
-      ms_method_description     TYPE abap_methdescr READ-ONLY.
+      ms_method_description     TYPE abap_methdescr READ-ONLY,
+      "! Object processor
+      mo_object_processor       TYPE REF TO zcl_aap_proc_object READ-ONLY.
   PROTECTED SECTION.
   PRIVATE SECTION.
     METHODS:
       constructor IMPORTING is_methdescr              TYPE abap_methdescr
-                            iv_containing_object_name TYPE abap_classname,
+                            iv_containing_object_name TYPE abap_classname
+                            io_object_processor       TYPE REF TO zcl_aap_proc_object,
       load_parameters.
     DATA:
       mt_parameter_processor_cache TYPE gty_parameter_proc_tab.
@@ -51,11 +55,13 @@ CLASS zcl_aap_proc_method IMPLEMENTATION.
     super->constructor( ).
 
     ASSERT: is_methdescr IS NOT INITIAL,
-            iv_containing_object_name IS NOT INITIAL.
+            iv_containing_object_name IS NOT INITIAL,
+            io_object_processor IS BOUND.
 
     ms_method_description = is_methdescr.
     mv_method_name = is_methdescr-name.
     mv_containing_object_name = iv_containing_object_name.
+    mo_object_processor = io_object_processor.
   ENDMETHOD.
 
   METHOD load_all.
@@ -103,8 +109,15 @@ CLASS zcl_aap_proc_method IMPLEMENTATION.
                                            is_parameter_description = <ls_parameter>
                                            iv_containing_object_name = mv_containing_object_name
                                            iv_containing_method_name = mv_method_name
+                                           io_method_processor       = me
                                        )
                       ) INTO TABLE mt_parameter_processor_cache.
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD is_annotatable.
+    rv_annotatable = boolc( ms_method_description-is_inherited = abap_false
+                            OR ( ms_method_description-is_inherited = abap_true
+                                 AND ms_method_description-is_redefined = abap_true ) ).
   ENDMETHOD.
 ENDCLASS.
