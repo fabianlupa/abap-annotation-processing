@@ -57,8 +57,11 @@ CLASS zcl_aap_proc_attribute IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD is_annotatable.
-    rv_annotatable = boolc( ms_attribute_description-is_inherited = abap_false
-*                            AND ms_attribute_description-is_interface = abap_false
-                            AND ms_attribute_description-alias_for IS INITIAL ).
+    rv_annotatable = boolc( mo_object_processor->is_annotatable( ) AND
+                            ( ms_attribute_description-is_inherited = abap_false
+*                              AND ms_attribute_description-is_interface = abap_false
+                              AND ms_attribute_description-alias_for IS INITIAL
+                             )
+                           ).
   ENDMETHOD.
 ENDCLASS.
