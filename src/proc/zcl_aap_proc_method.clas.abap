@@ -116,8 +116,11 @@ CLASS zcl_aap_proc_method IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD is_annotatable.
-    rv_annotatable = boolc( ms_method_description-is_inherited = abap_false
-                            OR ( ms_method_description-is_inherited = abap_true
-                                 AND ms_method_description-is_redefined = abap_true ) ).
+    rv_annotatable = boolc( mo_object_processor->is_annotatable( ) AND
+                            ( ms_method_description-is_inherited = abap_false
+                              OR ( ms_method_description-is_inherited = abap_true
+                                   AND ms_method_description-is_redefined = abap_true )
+                            )
+                           ).
   ENDMETHOD.
 ENDCLASS.
