@@ -102,7 +102,8 @@ CLASS zcl_aap_proc_object DEFINITION
       "! @parameter rt_processors | Attribute processors
       get_attribute_processors RETURNING VALUE(rt_processors) TYPE gty_attribute_proc_tab,
       load_all REDEFINITION,
-      get_annotations REDEFINITION.
+      get_annotations REDEFINITION,
+      is_annotatable REDEFINITION.
     DATA:
       "! Object descriptor
       mo_object_descr       TYPE REF TO cl_abap_objectdescr READ-ONLY,
@@ -324,6 +325,7 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
                       processor      = NEW zcl_aap_proc_attribute(
                                            is_attribute_description  = <ls_attribute>
                                            iv_containing_object_name = mv_classname_relative
+                                           io_object_processor       = me
                                        )
                       ) INTO TABLE mt_attribute_processor_cache.
     ENDLOOP.
@@ -333,10 +335,15 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
     LOOP AT mo_object_descr->methods ASSIGNING FIELD-SYMBOL(<ls_method>).
       INSERT VALUE #( method_name = <ls_method>-name
                       processor   = NEW zcl_aap_proc_method(
-                                        is_methdescr = <ls_method>
+                                        is_methdescr              = <ls_method>
                                         iv_containing_object_name = mv_classname_relative
+                                        io_object_processor       = me
                                     )
                       ) INTO TABLE mt_method_processor_cache.
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD is_annotatable.
+    rv_annotatable = is_object_relevant_by_descr( mo_object_descr ).
   ENDMETHOD.
 ENDCLASS.
