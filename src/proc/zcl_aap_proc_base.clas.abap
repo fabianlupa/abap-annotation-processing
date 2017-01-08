@@ -18,20 +18,38 @@ CLASS zcl_aap_proc_base DEFINITION
       is_annotation_present_by_descr IMPORTING io_descr          TYPE REF TO cl_abap_classdescr
                                      RETURNING VALUE(rv_present) TYPE abap_bool
                                      RAISING   zcx_aap_illegal_argument,
+      "! Check if an annotation is present by data variable
+      "! @parameter ig_data | Variable typed as REF TO annotation class
+      "! @parameter rv_present | Annotation is present
+      "! @raising zcx_aap_illegal_argument | ig_data is not a reference variable to an annotation
+      is_annotation_present_by_data IMPORTING ig_data           TYPE any
+                                    RETURNING VALUE(rv_present) TYPE abap_bool
+                                    RAISING   zcx_aap_illegal_argument,
       "! Get an annotation instance by its name
       "! @parameter iv_classname | Annotation class name
       "! @parameter ro_annotation | Found annotation class instance
-      "! @raising zcx_aap_illegal_argument | Annotation class not present
+      "! @raising zcx_aap_annotation_not_present | Annotation is not present
       get_annotation_by_name IMPORTING iv_classname         TYPE abap_classname
                              RETURNING VALUE(ro_annotation) TYPE REF TO zcl_aap_annotation_base
-                             RAISING   zcx_aap_illegal_argument,
+                             RAISING   zcx_aap_annotation_not_present,
       "! Get an annotation instance by descriptor
       "! @parameter io_descr | Descriptor instance
       "! @parameter ro_annotation | Found annotation class instance
-      "! @raising zcx_aap_illegal_argument | io_descr cannot be null or annotation not present
+      "! @raising zcx_aap_illegal_argument | io_descr cannot be null
+      "! @raising zcx_aap_annotation_not_present | Annotation is not present
       get_annotation_by_descr IMPORTING io_descr             TYPE REF TO cl_abap_classdescr
                               RETURNING VALUE(ro_annotation) TYPE REF TO zcl_aap_annotation_base
-                              RAISING   zcx_aap_illegal_argument,
+                              RAISING   zcx_aap_illegal_argument
+                                        zcx_aap_annotation_not_present,
+      "! Get an annotation instance by data variable
+      "! @parameter ig_data | Variable typed as REF TO annotation class
+      "! @parameter ro_annotation | Found annotation class instance
+      "! @raising zcx_aap_illegal_argument | ig_data is not a reference variable to an annotation
+      "! @raising zcx_aap_annotation_not_present | Annotation is not present
+      get_annotation_by_data IMPORTING ig_data              TYPE any
+                             RETURNING VALUE(ro_annotation) TYPE REF TO zcl_aap_annotation_base
+                             RAISING   zcx_aap_illegal_argument
+                                       zcx_aap_annotation_not_present,
       "! Get all annotations directly associated to this processor
       "! @parameter rt_annotations | Associated annotations
       get_annotations ABSTRACT RETURNING VALUE(rt_annotations) TYPE zif_aap_annotation_resolver=>gty_annotation_tab,
@@ -79,13 +97,10 @@ CLASS zcl_aap_proc_base IMPLEMENTATION.
     TRY.
         ro_annotation = lt_annotations[ descriptor = io_descr ]-instance.
       CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e018(zaap) WITH io_descr->get_relative_name( ) INTO DATA(lv_msg).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        RAISE EXCEPTION TYPE zcx_aap_annotation_not_present
           EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
             ix_previous = lx_ex
-            iv_name     = 'IO_DESCR'
-            iv_reason   = lv_msg ##NO_TEXT.
+            iv_name     = CONV #( io_descr->get_relative_name( ) ).
     ENDTRY.
   ENDMETHOD.
 
@@ -95,15 +110,26 @@ CLASS zcl_aap_proc_base IMPLEMENTATION.
     TRY.
         ro_annotation = lt_annotations[ classname = iv_classname ]-instance.
       CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e018(zaap) WITH iv_classname INTO DATA(lv_msg).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        RAISE EXCEPTION TYPE zcx_aap_annotation_not_present
           EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
             ix_previous = lx_ex
-            iv_name     = 'IV_CLASSNAME'
-            iv_reason   = lv_msg
-            iv_value    = iv_classname ##NO_TEXT.
+            iv_name     = iv_classname.
     ENDTRY.
+  ENDMETHOD.
+
+  METHOD get_annotation_by_data.
+    DATA(lo_descr) = cl_abap_typedescr=>describe_by_data( ig_data ).
+
+    IF lo_descr->type_kind <> cl_abap_typedescr=>kind_ref.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+    ENDIF.
+
+    DATA(lo_referenced_descr) = CAST cl_abap_refdescr( lo_descr )->get_referenced_type( ).
+    IF lo_referenced_descr->type_kind <> cl_abap_typedescr=>kind_class.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+    ENDIF.
+
+    ro_annotation = get_annotation_by_descr( CAST cl_abap_classdescr( lo_referenced_descr ) ).
   ENDMETHOD.
 
   METHOD is_annotation_present_by_descr.
@@ -118,6 +144,21 @@ CLASS zcl_aap_proc_base IMPLEMENTATION.
   METHOD is_annotation_present_by_name.
     DATA(lt_annotations) = get_annotations( ).
     rv_present = boolc( line_exists( lt_annotations[ classname = iv_classname ] ) ).
+  ENDMETHOD.
+
+  METHOD is_annotation_present_by_data.
+    DATA(lo_descr) = cl_abap_typedescr=>describe_by_data( ig_data ).
+
+    IF lo_descr->type_kind <> cl_abap_typedescr=>kind_ref.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+    ENDIF.
+
+    DATA(lo_referenced_descr) = CAST cl_abap_refdescr( lo_descr )->get_referenced_type( ).
+    IF lo_referenced_descr->type_kind <> cl_abap_typedescr=>kind_class.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+    ENDIF.
+
+    rv_present = is_annotation_present_by_descr( CAST cl_abap_classdescr( lo_referenced_descr ) ).
   ENDMETHOD.
 
   METHOD get_annotation_count.
