@@ -103,7 +103,8 @@ CLASS zcl_aap_proc_object DEFINITION
       get_attribute_processors RETURNING VALUE(rt_processors) TYPE gty_attribute_proc_tab,
       load_all REDEFINITION,
       get_annotations REDEFINITION,
-      is_annotatable REDEFINITION.
+      is_annotatable REDEFINITION,
+      get_target REDEFINITION.
     DATA:
       "! Object descriptor
       mo_object_descr       TYPE REF TO cl_abap_objectdescr READ-ONLY,
@@ -345,5 +346,9 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
 
   METHOD is_annotatable.
     rv_annotatable = is_object_relevant_by_descr( mo_object_descr ).
+  ENDMETHOD.
+
+  METHOD get_target.
+    ro_target = zcl_aap_annotation_target=>go_class.
   ENDMETHOD.
 ENDCLASS.
