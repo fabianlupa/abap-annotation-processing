@@ -37,7 +37,12 @@ CLASS zcl_aap_tools DEFINITION
       "! @parameter iv_devclass | Child devclass
       "! @parameter rv_parent_devclass | Parent devclass
       get_parent_devclass IMPORTING iv_devclass               TYPE devclass
-                          RETURNING VALUE(rv_parent_devclass) TYPE devclass.
+                          RETURNING VALUE(rv_parent_devclass) TYPE devclass,
+      "! Get objectdescriptor from data variable
+      "! @parameter ig_data | Variable typed as REF TO interface/class
+      "! @parameter ro_descriptor | Object descriptor
+      get_objectdescr_from_data IMPORTING ig_data              TYPE any
+                                RETURNING VALUE(ro_descriptor) TYPE REF TO cl_abap_objectdescr.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -127,5 +132,21 @@ CLASS zcl_aap_tools IMPLEMENTATION.
         i_objname    = CONV sobj_name( iv_devclass )    " Objektname im Objektkatalog
       IMPORTING
         e_parentpack = rv_parent_devclass.     " Paket
+  ENDMETHOD.
+
+  METHOD get_objectdescr_from_data.
+    DATA(lo_descr) = cl_abap_typedescr=>describe_by_data( ig_data ).
+
+    IF lo_descr->type_kind <> cl_abap_typedescr=>typekind_oref.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+    ENDIF.
+
+    DATA(lo_referenced_descr) = CAST cl_abap_refdescr( lo_descr )->get_referenced_type( ).
+    IF lo_referenced_descr->type_kind <> cl_abap_typedescr=>typekind_class
+        AND lo_referenced_descr->type_kind <> cl_abap_typedescr=>typekind_intf.
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+    ENDIF.
+
+    ro_descriptor = CAST cl_abap_objectdescr( lo_referenced_descr ).
   ENDMETHOD.
 ENDCLASS.

@@ -68,8 +68,6 @@ CLASS zcl_aap_proc_base DEFINITION
       "! @parameter ro_target | Target enumeration instance
       get_target ABSTRACT RETURNING VALUE(ro_target) TYPE REF TO zcl_aap_annotation_target.
   PROTECTED SECTION.
-    CONSTANTS:
-      gc_annotatable_intf_name TYPE abap_intfname VALUE zif_aap_annotatable=>gc_intfname.
     METHODS:
       constructor,
       "! Get the annotation resolver
