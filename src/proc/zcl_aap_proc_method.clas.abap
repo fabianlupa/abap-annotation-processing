@@ -27,7 +27,8 @@ CLASS zcl_aap_proc_method DEFINITION
                               RAISING   zcx_aap_illegal_argument,
       load_all REDEFINITION,
       get_annotations REDEFINITION,
-      is_annotatable REDEFINITION.
+      is_annotatable REDEFINITION,
+      get_target REDEFINITION.
     DATA:
       "! Name of the containing class or interface
       mv_containing_object_name TYPE abap_classname READ-ONLY,
@@ -122,5 +123,9 @@ CLASS zcl_aap_proc_method IMPLEMENTATION.
                                    AND ms_method_description-is_redefined = abap_true )
                             )
                            ).
+  ENDMETHOD.
+
+  METHOD get_target.
+    ro_target = zcl_aap_annotation_target=>go_method.
   ENDMETHOD.
 ENDCLASS.

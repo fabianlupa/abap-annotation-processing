@@ -10,7 +10,8 @@ CLASS zcl_aap_proc_attribute DEFINITION
     METHODS:
       load_all REDEFINITION,
       get_annotations REDEFINITION,
-      is_annotatable REDEFINITION.
+      is_annotatable REDEFINITION,
+      get_target REDEFINITION.
     DATA:
       "! Name of the containing class or interface
       mv_containing_object_name TYPE abap_classname READ-ONLY,
@@ -63,5 +64,9 @@ CLASS zcl_aap_proc_attribute IMPLEMENTATION.
                               AND ms_attribute_description-alias_for IS INITIAL
                              )
                            ).
+  ENDMETHOD.
+
+  METHOD get_target.
+    ro_target = zcl_aap_annotation_target=>go_attribute.
   ENDMETHOD.
 ENDCLASS.

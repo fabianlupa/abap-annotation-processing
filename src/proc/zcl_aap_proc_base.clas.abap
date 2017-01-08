@@ -63,7 +63,10 @@ CLASS zcl_aap_proc_base DEFINITION
       get_annotation_count RETURNING VALUE(rv_count) TYPE i,
       "! Can this class / interface / method / parameter / attribute be annotated
       "! @parameter rv_annotatable | Annotatable
-      is_annotatable ABSTRACT RETURNING VALUE(rv_annotatable) TYPE abap_bool.
+      is_annotatable ABSTRACT RETURNING VALUE(rv_annotatable) TYPE abap_bool,
+      "! Get the target for this processor
+      "! @parameter ro_target | Target enumeration instance
+      get_target ABSTRACT RETURNING VALUE(ro_target) TYPE REF TO zcl_aap_annotation_target.
   PROTECTED SECTION.
     CONSTANTS:
       gc_annotatable_intf_name TYPE abap_intfname VALUE zif_aap_annotatable=>gc_intfname.

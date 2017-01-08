@@ -10,7 +10,8 @@ CLASS zcl_aap_proc_parameter DEFINITION
     METHODS:
       load_all REDEFINITION,
       get_annotations REDEFINITION,
-      is_annotatable REDEFINITION.
+      is_annotatable REDEFINITION,
+      get_target REDEFINITION.
     DATA:
       "! Parameter description
       ms_parameter_description  TYPE abap_parmdescr READ-ONLY,
@@ -64,5 +65,9 @@ CLASS zcl_aap_proc_parameter IMPLEMENTATION.
 
   METHOD is_annotatable.
     rv_annotatable = mo_method_processor->is_annotatable( ).
+  ENDMETHOD.
+
+  METHOD get_target.
+    ro_target = zcl_aap_annotation_target=>go_parameter.
   ENDMETHOD.
 ENDCLASS.
