@@ -9,6 +9,8 @@ CLASS zcl_aap_example_class DEFINITION
       zif_aap_annotatable.
     METHODS:
       annotated_method IMPORTING iv_annotated_parameter TYPE string.
+    DATA:
+      mv_not_annotated_inst_attr TYPE string.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.

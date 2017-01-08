@@ -65,8 +65,12 @@ START-OF-SELECTION.
   WRITE: / |Attribute level annotations:|.
   ULINE.
 
-  DATA(gt_attr_annotations) = go_proc->get_annotations( ).
-  PERFORM write_annotations USING gt_attr_annotations.
+  LOOP AT go_proc->get_attribute_processors( ) ASSIGNING FIELD-SYMBOL(<gs_attr_proc>).
+    WRITE: / |{ <gs_attr_proc>-attribute_name }|.
+    DATA(gt_attr_annotations) = <gs_attr_proc>-processor->get_annotations( ).
+    PERFORM write_annotations USING gt_attr_annotations.
+    SKIP.
+  ENDLOOP.
 
   SKIP.
 
