@@ -28,25 +28,28 @@ CLASS zcl_aap_proc_base DEFINITION
       "! Get an annotation instance by its name
       "! @parameter iv_classname | Annotation class name
       "! @parameter ro_annotation | Found annotation class instance
-      "! @raising zcx_aap_illegal_argument | Annotation class not present
+      "! @raising zcx_aap_annotation_not_present | Annotation is not present
       get_annotation_by_name IMPORTING iv_classname         TYPE abap_classname
                              RETURNING VALUE(ro_annotation) TYPE REF TO zcl_aap_annotation_base
-                             RAISING   zcx_aap_illegal_argument,
+                             RAISING   zcx_aap_annotation_not_present,
       "! Get an annotation instance by descriptor
       "! @parameter io_descr | Descriptor instance
       "! @parameter ro_annotation | Found annotation class instance
-      "! @raising zcx_aap_illegal_argument | io_descr cannot be null or annotation not present
+      "! @raising zcx_aap_illegal_argument | io_descr cannot be null
+      "! @raising zcx_aap_annotation_not_present | Annotation is not present
       get_annotation_by_descr IMPORTING io_descr             TYPE REF TO cl_abap_classdescr
                               RETURNING VALUE(ro_annotation) TYPE REF TO zcl_aap_annotation_base
-                              RAISING   zcx_aap_illegal_argument,
+                              RAISING   zcx_aap_illegal_argument
+                                        zcx_aap_annotation_not_present,
       "! Get an annotation instance by data variable
       "! @parameter ig_data | Variable typed as REF TO annotation class
       "! @parameter ro_annotation | Found annotation class instance
       "! @raising zcx_aap_illegal_argument | ig_data is not a reference variable to an annotation
-      "!                                     or annotation is not present
+      "! @raising zcx_aap_annotation_not_present | Annotation is not present
       get_annotation_by_data IMPORTING ig_data              TYPE any
                              RETURNING VALUE(ro_annotation) TYPE REF TO zcl_aap_annotation_base
-                             RAISING   zcx_aap_illegal_argument,
+                             RAISING   zcx_aap_illegal_argument
+                                       zcx_aap_annotation_not_present,
       "! Get all annotations directly associated to this processor
       "! @parameter rt_annotations | Associated annotations
       get_annotations ABSTRACT RETURNING VALUE(rt_annotations) TYPE zif_aap_annotation_resolver=>gty_annotation_tab,
@@ -94,13 +97,10 @@ CLASS zcl_aap_proc_base IMPLEMENTATION.
     TRY.
         ro_annotation = lt_annotations[ descriptor = io_descr ]-instance.
       CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e018(zaap) WITH io_descr->get_relative_name( ) INTO DATA(lv_msg).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        RAISE EXCEPTION TYPE zcx_aap_annotation_not_present
           EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
             ix_previous = lx_ex
-            iv_name     = 'IO_DESCR'
-            iv_reason   = lv_msg ##NO_TEXT.
+            iv_name     = CONV #( io_descr->get_relative_name( ) ).
     ENDTRY.
   ENDMETHOD.
 
@@ -110,14 +110,10 @@ CLASS zcl_aap_proc_base IMPLEMENTATION.
     TRY.
         ro_annotation = lt_annotations[ classname = iv_classname ]-instance.
       CATCH cx_sy_itab_line_not_found INTO DATA(lx_ex).
-        MESSAGE e018(zaap) WITH iv_classname INTO DATA(lv_msg).
-        RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        RAISE EXCEPTION TYPE zcx_aap_annotation_not_present
           EXPORTING
-            is_textid   = zcx_aap_illegal_argument=>gc_with_name_and_reason
             ix_previous = lx_ex
-            iv_name     = 'IV_CLASSNAME'
-            iv_reason   = lv_msg
-            iv_value    = iv_classname ##NO_TEXT.
+            iv_name     = iv_classname.
     ENDTRY.
   ENDMETHOD.
 
