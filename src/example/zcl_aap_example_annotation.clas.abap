@@ -19,6 +19,10 @@ ENDCLASS.
 
 CLASS zcl_aap_example_annotation IMPLEMENTATION.
   METHOD get_bindable_attributes.
-    rt_attributes = VALUE #( ( CONV #( 'MV_ATTRIBUTE' ) ) ).
+*    rt_attributes = VALUE #( ( CONV #( 'MV_ATTRIBUTE' ) ) ).
+    rt_attributes = build_attribute_list(
+                      it_attribute_refs = VALUE #( ( REF #( mv_attribute ) ) )
+                      io_instance       = me
+                    ).
   ENDMETHOD.
 ENDCLASS.

@@ -252,19 +252,25 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD is_object_relevant_by_descr.
+    DATA: li_annotatable_dummy TYPE REF TO zif_aap_annotatable.
+
     zcx_aap_illegal_argument=>raise_if_nullpointer( io_ref  = io_descr
                                                     iv_name = 'IO_DESCR' ) ##NO_TEXT.
 
     " A class / interface is relevant for annotation processing if it or one of its base classes
     " implements the empty marker interface ZIF_AAP_ANNOTATABLE
+    DATA(lo_annotatable_descr) = CAST cl_abap_intfdescr(
+                                   zcl_aap_tools=>get_objectdescr_from_data( li_annotatable_dummy )
+                                 ).
+    DATA(lv_interface_name) = lo_annotatable_descr->get_relative_name( ).
 
     rv_relevant = COND #( " Check if it is a direct interface reference to ZIF_AAP_ANNOTATABLE
                           WHEN io_descr->kind = cl_abap_typedescr=>kind_intf
-                               AND io_descr->get_relative_name( ) = gc_annotatable_intf_name
+                               AND io_descr->get_relative_name( ) = lv_interface_name
                                THEN abap_true
                           " Otherwise the interface must be a component of the class / interface
                           ELSE boolc( line_exists(
-                                        io_descr->interfaces[ name = gc_annotatable_intf_name ]
+                                        io_descr->interfaces[ name = lv_interface_name ]
                                       ) ) ).
   ENDMETHOD.
 
