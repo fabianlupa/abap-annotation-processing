@@ -133,6 +133,12 @@
      <MSGNR>019</MSGNR>
      <TEXT>Processor for parameter &apos;&amp;1&apos; does not exist.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>Annotation &apos;&amp;1&apos; is not present.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
