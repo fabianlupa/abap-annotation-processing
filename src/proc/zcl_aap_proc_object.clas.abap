@@ -355,6 +355,6 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_target.
-    ro_target = zcl_aap_annotation_target=>go_class.
+    ro_target = zcl_aap_annotation_target=>go_object.
   ENDMETHOD.
 ENDCLASS.

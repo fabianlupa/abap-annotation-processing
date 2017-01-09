@@ -1,3 +1,4 @@
+"! Targets enumeration with targets for annotations or annotation processors
 CLASS zcl_aap_annotation_target DEFINITION
   PUBLIC
   FINAL
@@ -7,9 +8,13 @@ CLASS zcl_aap_annotation_target DEFINITION
     CLASS-METHODS:
       class_constructor.
     CLASS-DATA:
-      go_class     TYPE REF TO zcl_aap_annotation_target READ-ONLY,
+      "! Class / interface
+      go_object    TYPE REF TO zcl_aap_annotation_target READ-ONLY,
+      "! Method
       go_method    TYPE REF TO zcl_aap_annotation_target READ-ONLY,
+      "! Method parameter
       go_parameter TYPE REF TO zcl_aap_annotation_target READ-ONLY,
+      "! Attribute
       go_attribute TYPE REF TO zcl_aap_annotation_target READ-ONLY.
     DATA:
       mv_key TYPE char01 READ-ONLY.
@@ -23,7 +28,7 @@ ENDCLASS.
 
 CLASS zcl_aap_annotation_target IMPLEMENTATION.
   METHOD class_constructor.
-    init: go_class     'C',
+    init: go_object    'O',
           go_method    'M',
           go_parameter 'P',
           go_attribute 'A'.
