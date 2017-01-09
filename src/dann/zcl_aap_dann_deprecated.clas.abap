@@ -28,7 +28,7 @@ CLASS zcl_aap_dann_deprecated IMPLEMENTATION.
 
   METHOD get_targets_internal.
     rt_targets = VALUE #(
-      ( zcl_aap_annotation_target=>go_class )
+      ( zcl_aap_annotation_target=>go_object )
       ( zcl_aap_annotation_target=>go_method )
     ).
   ENDMETHOD.
