@@ -1,4 +1,4 @@
-# AAP - ABAP Annotation Processing
+# AAP - ABAP Annotation Processing [![Build Status](https://travis-ci.com/flaiker/abap-annotation-processing.svg?token=dqh3yJEMxtgMhb4syMRh&branch=master)](https://travis-ci.com/flaiker/abap-annotation-processing)
 Annotations in ABAP!
 
 ## Using annotations in ABAP code
