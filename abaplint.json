@@ -11,13 +11,13 @@
       },
       "line_length":{
          "enabled":true,
-         "length":100
+         "length":120
       },
       "max_one_statement":{
          "enabled":true
       },
       "parser_error":{
-         "enabled":true
+         "enabled":false
       },
       "space_before_colon":{
          "enabled":true
