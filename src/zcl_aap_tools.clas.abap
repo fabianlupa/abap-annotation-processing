@@ -99,9 +99,9 @@ CLASS zcl_aap_tools IMPLEMENTATION.
     " Check if class exists
     cl_abap_typedescr=>describe_by_name(
       EXPORTING
-        p_name         = iv_base_class_name    " Type name
+        p_name         = iv_base_class_name
       RECEIVING
-        p_descr_ref    = DATA(lo_descr)    " Reference to description object
+        p_descr_ref    = DATA(lo_descr)
       EXCEPTIONS
         type_not_found = 1
         OTHERS         = 2
@@ -127,11 +127,11 @@ CLASS zcl_aap_tools IMPLEMENTATION.
   METHOD get_parent_devclass.
     CALL FUNCTION 'DEV_GET_PARENTPACK_FROM_OBJECT'
       EXPORTING
-        i_pgmid      = 'R3TR'    " Programm-ID in Aufträgen und Aufgaben
-        i_objtype    = 'DEVC'    " Objekttyp
-        i_objname    = CONV sobj_name( iv_devclass )    " Objektname im Objektkatalog
+        i_pgmid      = 'R3TR'
+        i_objtype    = 'DEVC'
+        i_objname    = CONV sobj_name( iv_devclass )
       IMPORTING
-        e_parentpack = rv_parent_devclass.     " Paket
+        e_parentpack = rv_parent_devclass.
   ENDMETHOD.
 
   METHOD get_objectdescr_from_data.
