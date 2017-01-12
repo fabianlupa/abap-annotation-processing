@@ -57,7 +57,7 @@ CLASS zcl_aap_annotation_base IMPLEMENTATION.
     " Should be overwritten in subclasses, if they have other targets than these default ones
     rt_targets = VALUE #(
       ( zcl_aap_annotation_target=>go_attribute )
-      ( zcl_aap_annotation_target=>go_class )
+      ( zcl_aap_annotation_target=>go_object )
       ( zcl_aap_annotation_target=>go_parameter )
       ( zcl_aap_annotation_target=>go_method )
     ).
