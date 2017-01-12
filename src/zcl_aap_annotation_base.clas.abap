@@ -44,28 +44,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_aap_annotation_base IMPLEMENTATION.
-  METHOD constructor.
-    mt_targets = get_targets_internal( ).
-  ENDMETHOD.
+CLASS ZCL_AAP_ANNOTATION_BASE IMPLEMENTATION.
 
-  METHOD get_bindable_attributes ##NEEDED.
-    " Should be overwritten in subclasses, if they have bindable attributes
-  ENDMETHOD.
-
-  METHOD get_targets_internal.
-    " Should be overwritten in subclasses, if they have other targets than these default ones
-    rt_targets = VALUE #(
-      ( zcl_aap_annotation_target=>go_attribute )
-      ( zcl_aap_annotation_target=>go_class )
-      ( zcl_aap_annotation_target=>go_parameter )
-      ( zcl_aap_annotation_target=>go_method )
-    ).
-  ENDMETHOD.
-
-  METHOD get_targets.
-    rt_targets = mt_targets.
-  ENDMETHOD.
 
   METHOD build_attribute_list.
     DATA(lo_descr) = CAST cl_abap_classdescr(
@@ -86,5 +66,31 @@ CLASS zcl_aap_annotation_base IMPLEMENTATION.
     ENDLOOP.
 
     ASSERT lines( it_attribute_refs ) = lines( rt_attributes ).
+  ENDMETHOD.
+
+
+  METHOD constructor.
+    mt_targets = get_targets_internal( ).
+  ENDMETHOD.
+
+
+  METHOD get_bindable_attributes ##NEEDED.
+    " Should be overwritten in subclasses, if they have bindable attributes
+  ENDMETHOD.
+
+
+  METHOD get_targets.
+    rt_targets = mt_targets.
+  ENDMETHOD.
+
+
+  METHOD get_targets_internal.
+    " Should be overwritten in subclasses, if they have other targets than these default ones
+    rt_targets = VALUE #(
+      ( zcl_aap_annotation_target=>go_attribute )
+      ( zcl_aap_annotation_target=>go_object )
+      ( zcl_aap_annotation_target=>go_parameter )
+      ( zcl_aap_annotation_target=>go_method )
+    ).
   ENDMETHOD.
 ENDCLASS.
