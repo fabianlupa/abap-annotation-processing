@@ -16,6 +16,6 @@ PROGRAM zaap_debug_info.
 cl_demo_output=>new(
   )->begin_section( 'AAP Abap Annotation Processing Debug Information'
   )->write_data( name = 'Version' value = zcl_aap_version=>gc_version
-  )->display( ).
+  )->display( ) ##NO_TEXT.
 
 LEAVE PROGRAM.
