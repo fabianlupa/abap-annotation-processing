@@ -9,10 +9,10 @@ CLASS zcl_aap_version DEFINITION
       "! Version of AAP library in major.minor.revision format
       gc_version TYPE string VALUE '0.1.0-SNAPSHOT'.
     CLASS-DATA:
-      mv_major       TYPE i,
-      mv_minor       TYPE i,
-      mv_revision    TYPE i,
-      mv_is_snapshot TYPE abap_bool.
+      mv_major       TYPE i READ-ONLY,
+      mv_minor       TYPE i READ-ONLY,
+      mv_revision    TYPE i READ-ONLY,
+      mv_is_snapshot TYPE abap_bool READ-ONLY.
     CLASS-METHODS:
       class_constructor.
   PROTECTED SECTION.
