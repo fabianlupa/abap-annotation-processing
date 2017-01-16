@@ -1,7 +1,7 @@
 "! Illegal argument exception
 CLASS zcx_aap_illegal_argument DEFINITION
   PUBLIC
-  INHERITING FROM cx_dynamic_check
+  INHERITING FROM zcx_aap_call_error
   CREATE PUBLIC.
 
   PUBLIC SECTION.
@@ -70,8 +70,6 @@ CLASS zcx_aap_illegal_argument DEFINITION
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
       END OF gc_not_in_range_with_valuename.
-    INTERFACES:
-      if_t100_message.
     CLASS-METHODS:
       "! Raise exception if parameter value is a null reference
       "! @parameter io_ref | Reference to check
@@ -92,9 +90,9 @@ CLASS zcx_aap_illegal_argument DEFINITION
                             iv_reason   TYPE csequence OPTIONAL
                             iv_value    TYPE csequence OPTIONAL.
     DATA:
-      mv_name   TYPE string,
-      mv_reason TYPE string,
-      mv_value  TYPE string.
+      mv_name   TYPE string READ-ONLY,
+      mv_reason TYPE string READ-ONLY,
+      mv_value  TYPE string READ-ONLY.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -103,18 +101,11 @@ ENDCLASS.
 
 CLASS zcx_aap_illegal_argument IMPLEMENTATION.
   METHOD constructor ##ADT_SUPPRESS_GENERATION.
-    super->constructor( previous = ix_previous ).
+    super->constructor( is_textid = is_textid ix_previous = ix_previous ).
 
     mv_name = iv_name.
     mv_reason = iv_reason.
     mv_value = iv_value.
-
-    CLEAR me->textid.
-    IF is_textid IS INITIAL.
-      if_t100_message~t100key = gc_no_arguments.
-    ELSE.
-      if_t100_message~t100key = is_textid.
-    ENDIF.
   ENDMETHOD.
 
 
