@@ -2,7 +2,7 @@
 CLASS zcx_aap_annotation_not_present DEFINITION
   PUBLIC
   FINAL
-  INHERITING FROM cx_dynamic_check
+  INHERITING FROM zcx_aap_call_error
   CREATE PUBLIC.
 
   PUBLIC SECTION.
@@ -15,25 +15,20 @@ CLASS zcx_aap_annotation_not_present DEFINITION
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
       END OF gc_not_present.
-    INTERFACES:
-      if_t100_message.
     METHODS:
       "! @parameter ix_previous | Previous exception
       "! @parameter iv_name | Annotation class name
       constructor IMPORTING ix_previous LIKE previous OPTIONAL
                             iv_name     TYPE abap_classname OPTIONAL.
     DATA:
-      mv_name TYPE abap_classname.
+      mv_name TYPE abap_classname READ-ONLY.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
 
 CLASS zcx_aap_annotation_not_present IMPLEMENTATION.
   METHOD constructor ##ADT_SUPPRESS_GENERATION.
-    super->constructor( previous = ix_previous ).
+    super->constructor( is_textid = gc_not_present ix_previous = ix_previous ).
     mv_name = iv_name.
-
-    CLEAR me->textid.
-    if_t100_message~t100key = gc_not_present.
   ENDMETHOD.
 ENDCLASS.

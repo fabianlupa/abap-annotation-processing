@@ -195,8 +195,15 @@ CLASS zcl_aap_proc_object IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_annotations.
-    " TODO: Think of propagating the exception in some way
-    rt_annotations = get_resolver( )->get_annotations_for_object( mv_classname_relative ).
+    TRY.
+        rt_annotations = get_resolver( )->get_annotations_for_object( mv_classname_relative ).
+      CATCH zcx_aap_incons_customizing INTO DATA(lx_ex).
+        RAISE EXCEPTION TYPE zcx_aap_system_error
+          EXPORTING
+            is_textid   = zcx_aap_system_error=>gc_with_text
+            ix_previous = lx_ex
+            iv_text     = lx_ex->get_text( ).
+    ENDTRY.
   ENDMETHOD.
 
   METHOD get_attribute_processor.
