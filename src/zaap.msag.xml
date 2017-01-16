@@ -139,6 +139,36 @@
      <MSGNR>020</MSGNR>
      <TEXT>Annotation &apos;&amp;1&apos; is not present.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>AAP system error</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>AAP call error</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>AAP error</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Illegal state error</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>AAP system error: &amp;1</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
