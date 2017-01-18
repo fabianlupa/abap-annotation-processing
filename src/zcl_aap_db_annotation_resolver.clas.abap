@@ -43,7 +43,8 @@ CLASS zcl_aap_db_annotation_resolver DEFINITION
       select_entries IMPORTING is_key            TYPE gty_mapping
                      RETURNING VALUE(rt_entries) TYPE gty_mapping_result_tab,
       build_annotation_tab IMPORTING it_entries            TYPE gty_mapping_result_tab
-                           RETURNING VALUE(rt_annotations) TYPE zif_aap_annotation_resolver=>gty_annotation_tab
+                           RETURNING VALUE(rt_annotations)
+                                       TYPE zif_aap_annotation_resolver=>gty_annotation_tab
                            RAISING   zcx_aap_incons_customizing.
     CLASS-DATA:
       gt_query_cache TYPE gty_query_cache_tab.
