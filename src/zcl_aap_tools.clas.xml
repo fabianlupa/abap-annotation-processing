@@ -48,8 +48,15 @@
     <item>
      <ID>I</ID>
      <KEY>001</KEY>
-     <ENTRY> is not a class</ENTRY>
+     <ENTRY>is not a class</ENTRY>
      <LENGTH>20</LENGTH>
+     <SPLIT/>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>002</KEY>
+     <ENTRY>Variable must be an object reference.</ENTRY>
+     <LENGTH>40</LENGTH>
      <SPLIT/>
     </item>
    </TPOOL>

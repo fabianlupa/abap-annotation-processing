@@ -136,15 +136,25 @@ CLASS zcl_aap_tools IMPLEMENTATION.
 
   METHOD get_objectdescr_from_data.
     DATA(lo_descr) = cl_abap_typedescr=>describe_by_data( ig_data ).
-
     IF lo_descr->type_kind <> cl_abap_typedescr=>typekind_oref.
-      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        EXPORTING
+          is_textid = zcx_aap_illegal_argument=>gc_with_name_and_reason
+          iv_name   = 'IG_DATA'
+          iv_reason = 'Variable must be an object reference.'(002)
+          iv_value  = lo_descr->type_kind.
     ENDIF.
 
     DATA(lo_referenced_descr) = CAST cl_abap_refdescr( lo_descr )->get_referenced_type( ).
     IF lo_referenced_descr->type_kind <> cl_abap_typedescr=>typekind_class
         AND lo_referenced_descr->type_kind <> cl_abap_typedescr=>typekind_intf.
-      RAISE EXCEPTION TYPE zcx_aap_illegal_argument. " TODO: Add exception message
+
+      RAISE EXCEPTION TYPE zcx_aap_illegal_argument
+        EXPORTING
+          is_textid = zcx_aap_illegal_argument=>gc_with_name_and_reason
+          iv_name   = 'IG_DATA'
+          iv_reason = 'Variable must be an object reference.'(002)
+          iv_value  = lo_referenced_descr->type_kind.
     ENDIF.
 
     ro_descriptor = CAST cl_abap_objectdescr( lo_referenced_descr ).
