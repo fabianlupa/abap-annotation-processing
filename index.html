@@ -8,22 +8,7 @@ layout: empty
     <title>AAP ABAP Doc</title>
   </head>
   <frameset cols="25%,75%">
-    <frame>
-      <html>
-        <body>
-          {% for collection in site.collections %}
-          {% unless collection.label == 'posts' %}
-          <h2>{{collection.label}}</h2>
-          <ul>
-            {% for file in collection.files %}
-            <li><a href="{{ file.path }}" target="content">{{ file.path }}</a></li>
-            {% endfor %}
-          </ul>
-          {% endunless %}
-          {% endfor %}
-        </body>
-      </html>
-    </frame>
-    <frame id="content"></frame>
+    <frame src="navigation.html">
+    <frame id="content">
   </frameset>
 </html>
