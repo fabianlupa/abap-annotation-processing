@@ -9,7 +9,7 @@ layout: empty
     <h2>{{collection.label}}</h2>
     <ul>
       {% for file in collection.files %}
-      <li><a href="{{ file.path || remove_first:'_' }}" target="content">{{ file.path }}</a></li>
+      <li><a href="{{ file.path | remove_first:'/_' }}" target="content">{{ file.path }}</a></li>
       {% endfor %}
     </ul>
     {% endunless %}
