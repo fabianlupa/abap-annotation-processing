@@ -6,3 +6,9 @@ layout: default
   <li><a href="{{ page.url }}">{{ page.title }}</a></li>
 {% endfor %}
 </ul>
+
+<ul>
+{% for collection in site.collections %}
+  <li><a href="{{ collection[0] }}">{{ collection[0] | capitalize }}</a></li>
+{% endfor %}
+</ul>
