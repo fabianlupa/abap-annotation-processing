@@ -1,2 +1,3 @@
 collections:
-- abapdoc
+  abapdoc:
+    output: true
