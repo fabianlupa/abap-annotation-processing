@@ -1,25 +1,18 @@
 ---
 layout: default
 ---
-<ul>
-{% for page in site.collections.abapdoc %}
-  <li><a href="{{ page.url }}">{{ page.title }}</a></li>
-{% endfor %}
-</ul>
-
-<ul>
-{% for collection in site.collections %}
-  <li><a href="{{ collection[0] }}">{{ collection[0] | capitalize }}</a></li>
-{% endfor %}
-</ul>
-
-{% for collection in site.collections %}
-{% unless collection.label == 'posts' %}
-<h2>{{collection.label}}</h2>
-<ul>
-    {% for file in collection.files %}
-    <li><a href="{{ file.path | remove: "_" }}">{{ file.path | remove: "_" }}</a></li>
+<frameset cols="25%,75%">
+  <frame>
+    {% for collection in site.collections %}
+    {% unless collection.label == 'posts' %}
+    <h2>{{collection.label}}</h2>
+    <ul>
+      {% for file in collection.files %}
+      <li><a href="{{ file.path }}" target="content">{{ file.path }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endunless %}
     {% endfor %}
-</ul>
-{% endunless %}
-{% endfor %}
+  </frame>
+  <frame id="content"></frame>
+</frameset>
