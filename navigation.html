@@ -7,10 +7,15 @@ layout: empty
     <link rel="stylesheet" href="htmldesign/stylesheet.css" type="text/css">
   </head>
   <body>
+    {% for collection in site.collections %}
+    {% unless collection.label == 'posts' %}
+    <h2>{{collection.label}}</h2>
     <ul>
-      {% for file in site.abapdoc.files %}
+      {% for file in collection.files %}
       <li><a href="./{{ file.path | remove_first:'/_' }}" target="content">{{ file.basename | upcase }}</a></li>
       {% endfor %}
     </ul>
+    {% endunless %}
+    {% endfor %}
   </body>
 </html>
