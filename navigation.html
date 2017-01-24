@@ -8,7 +8,7 @@ layout: empty
   </head>
   <body>
     <ul>
-      {% for file in site.collections.abapdoc.files %}
+      {% for file in site.abapdoc.files %}
       <li><a href="./{{ file.path | remove_first:'/_' }}" target="content">{{ file.basename | upcase }}</a></li>
       {% endfor %}
     </ul>
