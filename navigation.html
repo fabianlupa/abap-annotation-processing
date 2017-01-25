@@ -11,7 +11,8 @@ layout: empty
     {% unless collection.label == 'posts' %}
     <h2>{{collection.label}}</h2>
     <ul>
-      {% for file in collection.files %}
+      {% assign files = collection.files | sort: 'basename' %}
+      {% for file in files %}
       <li><a href="./{{ file.path | remove_first:'/_' }}" target="content">{{ file.basename | upcase }}</a></li>
       {% endfor %}
     </ul>
