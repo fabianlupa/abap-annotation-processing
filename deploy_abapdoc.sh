@@ -3,9 +3,13 @@
 git config --global user.name "Travis CI"
 git config --global user.email "builds@travis-ci.com"
 
-$(npm bin)/set-up-ssh --key "$encrypted_2a1c10c99a60_key" \
-                      --iv "$encrypted_2a1c10c99a60_iv" \
-                      --path-encrypted-key "ghpages.key.enc"
+openssl aes-256-cbc -K $encrypted_2a1c10c99a60_key -iv $encrypted_2a1c10c99a60_iv \
+        -in ghpages.key.enc -out ghpages.key -d
+chmod 600 ghpages.key
+printf "%s\n" \
+       "Host github.com" \
+       "  IdentityFile ghpages.key" \
+       "  LogLevel ERROR" >> ~/.ssh/config
 
 cp -r ./abapdoc /tmp/abapdoc
 
