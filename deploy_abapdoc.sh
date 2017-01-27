@@ -1,11 +1,17 @@
-#!/bin/bash
+#!/bin/bash -e
 
 git config --global user.name "Travis CI"
 git config --global user.email "builds@travis-ci.com"
 
+$(npm bin)/set-up-ssh --key "$encrypted_2a1c10c99a60_key" \
+                      --iv "$encrypted_2a1c10c99a60_iv" \
+                      --path-encrypted-key "ghpages.key.enc"
+
 cp -r ./abapdoc /tmp/abapdoc
 
-git checkout gh-pages
+git clean -fdx
+
+git checkout origin/gh-pages
 rm -rf ./_abapdoc/*
 cp -r /tmp/abapdoc/* ./_abapdoc/
 
@@ -20,10 +26,6 @@ done
 # Update only if there is a difference
 if ! git diff-index --quiet HEAD ; then
   echo "Updating ABAP Doc on GitHub pages"
-
-  $(npm bin)/set-up-ssh --key "$encrypted_2a1c10c99a60_key" \
-                        --iv "$encrypted_2a1c10c99a60_iv" \
-                        --path-encrypted-key "ghpages.key.enc"
 
   git add -A
   git commit -m "Update ABAP Doc ($TRAVIS_BUILD_NUMBER)"
