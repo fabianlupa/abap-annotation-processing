@@ -8,7 +8,7 @@ openssl aes-256-cbc -K $encrypted_2a1c10c99a60_key -iv $encrypted_2a1c10c99a60_i
 chmod 600 ghpages.key
 printf "%s\n" \
        "Host github.com" \
-       "  IdentityFile ${$TRAVIS_BUILD_DIR}/ghpages.key" \
+       "  IdentityFile ${TRAVIS_BUILD_DIR}/ghpages.key" \
        "  LogLevel ERROR" >> ~/.ssh/config
 
 cd ..
