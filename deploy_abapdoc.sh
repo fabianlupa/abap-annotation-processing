@@ -8,16 +8,15 @@ openssl aes-256-cbc -K $encrypted_2a1c10c99a60_key -iv $encrypted_2a1c10c99a60_i
 chmod 600 ghpages.key
 printf "%s\n" \
        "Host github.com" \
-       "  IdentityFile ghpages.key" \
+       "  IdentityFile ${$TRAVIS_BUILD_DIR}/ghpages.key" \
        "  LogLevel ERROR" >> ~/.ssh/config
 
-cp -r ./abapdoc /tmp/abapdoc
+cd ..
+git clone git@github.com:flaiker/abap-annotation-processing gh-pages -b gh-pages --depth=1
+cd ./gh-pages
 
-git clean -fdx
-
-git checkout origin/gh-pages
 rm -rf ./_abapdoc/*
-cp -r /tmp/abapdoc/* ./_abapdoc/
+cp -r $TRAVIS_BUILD_DIR/abapdoc/* ./_abapdoc/
 
 # Remove generation date footer so it does not show up as a diff
 for file in $(find ./_abapdoc -name '*.html');
