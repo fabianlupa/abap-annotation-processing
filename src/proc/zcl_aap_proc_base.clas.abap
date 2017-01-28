@@ -82,7 +82,7 @@ ENDCLASS.
 
 CLASS zcl_aap_proc_base IMPLEMENTATION.
   METHOD constructor.
-    mi_resolver = zcl_aap_resolver_injector=>get_resolver( ).
+    mi_resolver = zcl_aap_dependency_injector=>get_resolver( ).
   ENDMETHOD.
 
   METHOD get_resolver.

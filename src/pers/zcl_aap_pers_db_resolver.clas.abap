@@ -1,5 +1,5 @@
 "! Default annotation resolver (using database tables)
-CLASS zcl_aap_db_annotation_resolver DEFINITION
+CLASS zcl_aap_pers_db_resolver DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
@@ -52,75 +52,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_aap_db_annotation_resolver IMPLEMENTATION.
-  METHOD select_entries.
-    TYPES: BEGIN OF lty_result.
-        INCLUDE TYPE gty_mapping.
-    TYPES: detailid       TYPE zaap_l_detailid,
-           annotationname TYPE seoclsname,
-           END OF lty_result.
-    DATA: lt_result    TYPE STANDARD TABLE OF lty_result.
-
-    " Check if cache contains the result
-    TRY.
-        rt_entries = gt_query_cache[ query = is_key ]-result.
-        RETURN.
-      CATCH cx_sy_itab_line_not_found ##NO_HANDLER.
-        " Cache did not contain the result
-    ENDTRY.
-
-    SELECT * INTO CORRESPONDING FIELDS OF TABLE @lt_result
-      FROM zaap_tcassociat
-      WHERE objectname = @is_key-objectname
-        AND attrname   = @is_key-attrname
-        AND methname   = @is_key-methname
-        AND parmname   = @is_key-parmname
-      ORDER BY PRIMARY KEY.
-
-    rt_entries = CORRESPONDING #( lt_result ).
-
-    LOOP AT lt_result ASSIGNING FIELD-SYMBOL(<ls_entry>).
-      ASSIGN rt_entries[ sy-tabix ]-parameters TO FIELD-SYMBOL(<lt_parameters>).
-      ASSERT <lt_parameters> IS ASSIGNED.
-
-      SELECT attrname, value INTO TABLE @<lt_parameters>
-        FROM zaap_tcassocdet
-        WHERE detailid = @<ls_entry>-detailid
-        ORDER BY PRIMARY KEY.
-    ENDLOOP.
-
-    " Cache the result (for this internal session)
-    INSERT VALUE #( query = is_key result = rt_entries ) INTO TABLE gt_query_cache.
-  ENDMETHOD.
-
-
-  METHOD get_annotations_for_attribute.
-    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_containing_object_name
-                                                attrname   = iv_attribute_name ) ).
-    rt_annotations = build_annotation_tab( lt_entries ).
-  ENDMETHOD.
-
-
-  METHOD get_annotations_for_method.
-    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_containing_object_name
-                                                methname   = iv_method_name ) ).
-    rt_annotations = build_annotation_tab( lt_entries ).
-  ENDMETHOD.
-
-
-  METHOD get_annotations_for_object.
-    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_name ) ).
-    rt_annotations = build_annotation_tab( lt_entries ).
-  ENDMETHOD.
-
-
-  METHOD get_annotations_for_parameter.
-    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_containing_object_name
-                                                methname   = iv_containing_method_name
-                                                parmname   = iv_parameter_name ) ).
-    rt_annotations = build_annotation_tab( lt_entries ).
-  ENDMETHOD.
-
+CLASS zcl_aap_pers_db_resolver IMPLEMENTATION.
   METHOD build_annotation_tab.
     DATA: lo_annotation TYPE REF TO zcl_aap_annotation_base.
 
@@ -158,5 +90,76 @@ CLASS zcl_aap_db_annotation_resolver IMPLEMENTATION.
       CLEAR lt_bindable_attributes.
       UNASSIGN <ls_parameter>.
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD select_entries.
+    TYPES: BEGIN OF lty_result.
+        INCLUDE TYPE gty_mapping.
+    TYPES: annotationname TYPE seoclsname,
+           END OF lty_result.
+    DATA: lt_result    TYPE STANDARD TABLE OF lty_result.
+
+    " Check if cache contains the result
+    TRY.
+        rt_entries = gt_query_cache[ query = is_key ]-result.
+        RETURN.
+      CATCH cx_sy_itab_line_not_found ##NO_HANDLER.
+        " Cache did not contain the result
+    ENDTRY.
+
+    SELECT * INTO CORRESPONDING FIELDS OF TABLE @lt_result
+      FROM zaap_tcassociat
+      WHERE objectname = @is_key-objectname
+        AND attrname   = @is_key-attrname
+        AND methname   = @is_key-methname
+        AND parmname   = @is_key-parmname
+      ORDER BY PRIMARY KEY.
+
+    rt_entries = CORRESPONDING #( lt_result ).
+
+    LOOP AT lt_result ASSIGNING FIELD-SYMBOL(<ls_entry>).
+      ASSIGN rt_entries[ sy-tabix ]-parameters TO FIELD-SYMBOL(<lt_parameters>).
+      ASSERT <lt_parameters> IS ASSIGNED.
+
+      SELECT annotationattr, value INTO TABLE @<lt_parameters>
+        FROM zaap_tcassocdet
+        WHERE objectname = @<ls_entry>-objectname
+          AND attrname   = @<ls_entry>-attrname
+          AND methname   = @<ls_entry>-methname
+          AND parmname   = @<ls_entry>-parmname
+        ORDER BY PRIMARY KEY.
+    ENDLOOP.
+
+    " Cache the result (for this internal session)
+    INSERT VALUE #( query = is_key result = rt_entries ) INTO TABLE gt_query_cache.
+  ENDMETHOD.
+
+
+  METHOD zif_aap_annotation_resolver~get_annotations_for_attribute.
+    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_containing_object_name
+                                                attrname   = iv_attribute_name ) ).
+    rt_annotations = build_annotation_tab( lt_entries ).
+  ENDMETHOD.
+
+
+  METHOD zif_aap_annotation_resolver~get_annotations_for_method.
+    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_containing_object_name
+                                                methname   = iv_method_name ) ).
+    rt_annotations = build_annotation_tab( lt_entries ).
+  ENDMETHOD.
+
+
+  METHOD zif_aap_annotation_resolver~get_annotations_for_object.
+    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_name ) ).
+    rt_annotations = build_annotation_tab( lt_entries ).
+  ENDMETHOD.
+
+
+  METHOD zif_aap_annotation_resolver~get_annotations_for_parameter.
+    DATA(lt_entries) = select_entries( VALUE #( objectname = iv_containing_object_name
+                                                methname   = iv_containing_method_name
+                                                parmname   = iv_parameter_name ) ).
+    rt_annotations = build_annotation_tab( lt_entries ).
   ENDMETHOD.
 ENDCLASS.
