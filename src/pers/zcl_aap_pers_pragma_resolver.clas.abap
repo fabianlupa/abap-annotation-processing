@@ -1,5 +1,5 @@
 "! Pragma annotation resolver
-CLASS zcl_aap_pragma_annot_resolver DEFINITION
+CLASS zcl_aap_pers_pragma_resolver DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
@@ -18,7 +18,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_aap_pragma_annot_resolver IMPLEMENTATION.
+CLASS zcl_aap_pers_pragma_resolver IMPLEMENTATION.
   METHOD get_annotations_for_attribute.
     RAISE EXCEPTION TYPE zcx_aap_not_implemented.
   ENDMETHOD.

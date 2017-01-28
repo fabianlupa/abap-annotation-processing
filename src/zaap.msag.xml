@@ -169,6 +169,18 @@
      <MSGNR>025</MSGNR>
      <TEXT>AAP system error: &amp;1</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>Object is locked by &apos;&amp;2&apos;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAAP</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Annotation association change failed: &amp;1</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

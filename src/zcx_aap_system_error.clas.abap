@@ -37,6 +37,9 @@ CLASS zcx_aap_system_error DEFINITION
       END OF gc_with_text.
     INTERFACES:
       if_t100_message.
+    CLASS-METHODS:
+      "! Raise this exception using sy-msg... fields
+      raise_from_sy.
     METHODS:
       "! @parameter is_textid | Textid
       "! @parameter ix_previous | Previous exception
@@ -64,5 +67,16 @@ CLASS zcx_aap_system_error IMPLEMENTATION.
     ELSE.
       if_t100_message~t100key = is_textid.
     ENDIF.
+  ENDMETHOD.
+
+  METHOD raise_from_sy.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+            INTO DATA(lv_msg_text).
+
+    RAISE EXCEPTION TYPE zcx_aap_system_error
+      EXPORTING
+        is_textid = zcx_aap_system_error=>gc_with_text
+        iv_text   = lv_msg_text.
   ENDMETHOD.
 ENDCLASS.

@@ -3,13 +3,13 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_AAP_PRAGMA_ANNOT_RESOLVER</CLSNAME>
+    <CLSNAME>ZCL_AAP_DEPENDENCY_INJECTOR</CLSNAME>
     <VERSION>1</VERSION>
     <LANGU>E</LANGU>
-    <DESCRIPT>Pragma annotation resolver</DESCRIPT>
+    <DESCRIPT>Dependency injector</DESCRIPT>
     <UUID/>
     <CATEGORY>00</CATEGORY>
-    <EXPOSURE>2</EXPOSURE>
+    <EXPOSURE>0</EXPOSURE>
     <STATE>1</STATE>
     <RELEASE>0</RELEASE>
     <AUTHOR/>
@@ -26,7 +26,7 @@
     <FIXPT>X</FIXPT>
     <VARCL/>
     <UNICODE>X</UNICODE>
-    <RSTAT>K</RSTAT>
+    <RSTAT/>
     <CLSDEFATT/>
     <CLSDEFMTD/>
     <CLSDEFINT/>
