@@ -4,7 +4,7 @@ git config --global user.name "Travis CI"
 git config --global user.email "builds@travis-ci.com"
 
 openssl aes-256-cbc -K $encrypted_2a1c10c99a60_key -iv $encrypted_2a1c10c99a60_iv \
-        -in ghpages.key.enc -out ghpages.key -d
+        -in ./travis/ghpages.key.enc -out ghpages.key -d
 chmod 600 ghpages.key
 printf "%s\n" \
        "Host github.com" \
