@@ -17,6 +17,7 @@ cd ./gh-pages
 
 rm -rf ./_abapdoc/*
 cp -r $TRAVIS_BUILD_DIR/abapdoc/* ./_abapdoc/
+find ./_abapdoc -type f ! -name '*.html' -delete
 
 # Remove generation date footer so it does not show up as a diff
 for file in $(find ./_abapdoc -name '*.html');
