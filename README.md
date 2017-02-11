@@ -1,4 +1,4 @@
-# AAP - ABAP Annotation Processing [![Build Status](https://travis-ci.com/flaiker/abap-annotation-processing.svg?token=dqh3yJEMxtgMhb4syMRh&branch=master)](https://travis-ci.com/flaiker/abap-annotation-processing) [![ABAP Doc](https://img.shields.io/badge/ABAP%20Doc-latest-blue.svg)](https://flaiker.github.io/abap-annotation-processing/)
+# AAP - ABAP Annotation Processing [![Build Status](https://travis-ci.com/flaiker/abap-annotation-processing.svg?token=dqh3yJEMxtgMhb4syMRh&branch=master)](https://travis-ci.com/flaiker/abap-annotation-processing) [![ABAP Doc](https://img.shields.io/badge/ABAP%20Doc-latest-blue.svg)](https://flaiker.github.io/abap-annotation-processing/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 Annotations in ABAP!
 
 ## Using annotations in ABAP code
