@@ -19,19 +19,19 @@ ENDCLASS.
 
 
 CLASS zcl_aap_pers_pragma_resolver IMPLEMENTATION.
-  METHOD get_annotations_for_attribute.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_attribute.
     RAISE EXCEPTION TYPE zcx_aap_not_implemented.
   ENDMETHOD.
 
-  METHOD get_annotations_for_method.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_method.
     RAISE EXCEPTION TYPE zcx_aap_not_implemented.
   ENDMETHOD.
 
-  METHOD get_annotations_for_object.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_object.
     RAISE EXCEPTION TYPE zcx_aap_not_implemented.
   ENDMETHOD.
 
-  METHOD get_annotations_for_parameter.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_parameter.
     RAISE EXCEPTION TYPE zcx_aap_not_implemented.
   ENDMETHOD.
 ENDCLASS.

@@ -22,19 +22,19 @@ ENDCLASS.
 
 
 CLASS ztcl_aap_test_mem_an_resolver IMPLEMENTATION.
-  METHOD get_annotations_for_attribute.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_attribute.
 
   ENDMETHOD.
 
-  METHOD get_annotations_for_method.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_method.
 
   ENDMETHOD.
 
-  METHOD get_annotations_for_object.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_object.
 
   ENDMETHOD.
 
-  METHOD get_annotations_for_parameter.
+  METHOD zif_aap_annotation_resolver~get_annotations_for_parameter.
 
   ENDMETHOD.
 
