@@ -38,12 +38,9 @@ CLASS lcl_alv_helper IMPLEMENTATION.
 
     io_alv->change_node(
       EXPORTING
-        i_node_key     = iv_node_key    " Key of Changed Line
-        i_outtab_line  = lv_dummy    " Outtab Line to be Changed
-        is_node_layout = VALUE #( dragdropid = iv_dragdropid u_dragdrop = abap_true )    " Node Layout
-*        it_item_layout =     " Item Layout
-*        i_node_text    =     " Node Text
-*        i_u_node_text  =     " 'X': Change Node Text
+        i_node_key     = iv_node_key
+        i_outtab_line  = lv_dummy
+        is_node_layout = VALUE #( dragdropid = iv_dragdropid u_dragdrop = abap_true )
       EXCEPTIONS
         node_not_found = 1
         OTHERS         = 2
