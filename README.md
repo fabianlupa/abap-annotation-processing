@@ -1,6 +1,10 @@
 # AAP - ABAP Annotation Processing [![Build Status](https://travis-ci.com/flaiker/abap-annotation-processing.svg?token=dqh3yJEMxtgMhb4syMRh&branch=master)](https://travis-ci.com/flaiker/abap-annotation-processing) [![ABAP Doc](https://img.shields.io/badge/ABAP%20Doc-latest-blue.svg)](https://flaiker.github.io/abap-annotation-processing/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 Annotations in ABAP!
 
+**This project is a technology study / proof of concept of implementing a framework to manage class based annotations in ABAP. Since there is no native language support for annotations the assignments are done in customizing tables. The current state is still very much unfinished and not production ready. I am currently not planning on finishing this project (the necessary efforts and drawbacks are way too high). Feel free to fork it or take parts of it for reference.**
+
+**DO NOT USE IN PRODUCTION.**
+
 ## Using annotations in ABAP code
 ```abap
 DATA: lo_annotation TYPE REF TO zcl_my_annotation.
@@ -18,7 +22,6 @@ ENDIF.
 ## Adding annotations to classes/interfaces/attributes/methods/parameters
 Using transaction **ZAAP_CUST**:
 ![Transaction ZAAP_CUST](https://github.com/flaiker/abap-annotation-processing/wiki/rendered/zaap_cust.PNG)
-IDE support for the ABAP Development Tools (Eclipse) is planned.
 
 ## API Overview
 ![API Overview](https://github.com/flaiker/abap-annotation-processing/wiki/rendered/api-overview.png)
